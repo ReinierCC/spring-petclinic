@@ -1,0 +1,67 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# GitHub
+.github
+
+# IDEs
+.idea
+*.iml
+.vscode
+.settings
+.project
+.classpath
+.factorypath
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build outputs (keep target/ for Docker build)
+build/
+out/
+*.class
+
+# Don't exclude target/ as we need the JAR for Docker builds
+# target/
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+
+# Test outputs
+*.log
+*.tmp
+
+# Documentation
+*.md
+!README.md
+LICENSE.txt
+
+# Container files (don't copy these into build context)
+docker-compose.yml
+Dockerfile*
+.dockerignore
+
+# CI/CD
+.travis.yml
+.gitlab-ci.yml
+
+# Development
+.devcontainer/
+.gitpod.yml
+
+# Kubernetes (don't need in image)
+k8s/
+
+# Temporary files
+tmp/
+temp/
+*.swp
+*.swo
+*~
