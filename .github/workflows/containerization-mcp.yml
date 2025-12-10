@@ -52,7 +52,7 @@ jobs:
               console.log(JSON.stringify(result.value, null, 2));
               if (result.value.modules?.length) {
                 console.log('\n🔍 Detected:', result.value.modules.map(m => 
-                  \`\${m.name} (\${m.language})\`).join(', '));
+                  \\\`\\\${m.name} (\\\${m.language})\\\`).join(', '));
               }
               console.log('\n✨ Successfully called analyze-repo tool!');
             } else {
