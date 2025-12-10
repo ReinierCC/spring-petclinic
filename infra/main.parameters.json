@@ -9,7 +9,7 @@
       "value": "petclinicadmin"
     },
     "postgresAdminPassword": {
-      "value": "REPLACE_WITH_SECURE_PASSWORD"
+      "value": "CHANGE_ME_BEFORE_DEPLOYMENT_MinLength8!"
     },
     "aksNodeCount": {
       "value": 2

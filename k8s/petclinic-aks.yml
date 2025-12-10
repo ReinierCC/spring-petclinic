@@ -13,18 +13,8 @@ metadata:
 data:
   SPRING_PROFILES_ACTIVE: "postgres"
 ---
-# Secret for database credentials (will be created from Azure Key Vault)
-apiVersion: v1
-kind: Secret
-metadata:
-  name: postgres-secret
-  namespace: petclinic
-type: Opaque
-stringData:
-  # These will be replaced during deployment with actual values from Key Vault
-  SPRING_DATASOURCE_URL: "jdbc:postgresql://POSTGRES_SERVER_FQDN:5432/petclinic?sslmode=require"
-  SPRING_DATASOURCE_USERNAME: "POSTGRES_USERNAME"
-  SPRING_DATASOURCE_PASSWORD: "POSTGRES_PASSWORD"
+# Note: Database credentials Secret is created by the deployment script
+# from Azure Key Vault. It is not defined here to avoid placeholder values.
 ---
 # Deployment for PetClinic application
 apiVersion: apps/v1

@@ -142,6 +142,3 @@ print_warning "IMPORTANT: Keep the deployment-info.env file secure as it contain
 print_info "================================"
 print_info "Next steps:"
 print_info "1. Run './scripts/deploy-app.sh' to build and deploy the application"
-EOF
-
-chmod +x "$DEPLOYMENT_INFO_FILE" 2>/dev/null || true

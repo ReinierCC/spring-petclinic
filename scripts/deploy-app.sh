@@ -143,12 +143,12 @@ if [ -n "$EXTERNAL_IP" ]; then
     print_info "================================"
     print_info "Access the application at: http://$EXTERNAL_IP"
     print_info "================================"
+    
+    # Save application URL
+    echo "APPLICATION_URL=http://$EXTERNAL_IP" >> "$DEPLOYMENT_INFO_FILE"
 else
     print_warning "External IP not yet assigned. Run the following command to check:"
     print_warning "kubectl get service petclinic -n petclinic"
 fi
-
-# Save application URL
-echo "APPLICATION_URL=http://$EXTERNAL_IP" >> "$DEPLOYMENT_INFO_FILE"
 
 print_info "Deployment completed!"
