@@ -142,20 +142,6 @@ module keyVaultAccess './core/security/key-vault-access.bicep' = {
   }
 }
 
-// Store PostgreSQL connection string in Key Vault
-module postgresConnectionStringSecret './core/security/key-vault-secret.bicep' = {
-  name: 'postgres-connection-string-secret'
-  scope: rg
-  params: {
-    keyVaultName: keyVault.outputs.name
-    secretName: 'POSTGRES-CONNECTION-STRING'
-    secretValue: 'postgresql://${postgresAdminLogin}:${postgresAdminPassword}@${postgresServer.outputs.POSTGRES_DOMAIN_NAME}:5432/${postgresDatabaseName}?sslmode=require'
-  }
-  dependsOn: [
-    keyVaultAccess
-  ]
-}
-
 // Container app for the web service
 module web './core/host/container-app.bicep' = {
   name: 'web'
