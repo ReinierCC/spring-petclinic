@@ -42,11 +42,9 @@ out/
 ### VS Code ###
 .vscode/
 
-### Node.js ###
+### Node.js (workflow artifacts) ###
 node_modules/
-package.json
-package-lock.json
-*.mjs
+analyze.mjs
 .package-lock.json
 
 ### CSS ###

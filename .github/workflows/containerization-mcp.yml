@@ -49,7 +49,7 @@ jobs:
               const app = createApp();
               
               // Execute the analyze-repo tool to detect technologies and dependencies
-              // This demonstrates the success criteria: using the MCP server to call analyze_repo tool
+              // This demonstrates the success criteria: using the MCP server to call analyze-repo tool
               const result = await app.execute('analyze-repo', {
                 repositoryPath: process.cwd(),
                 depth: 3,
