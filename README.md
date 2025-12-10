@@ -39,10 +39,39 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Building a Container
 
-There is no `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
+You can build a container image using the provided `Dockerfile`:
+
+```bash
+docker build -t petclinic:latest .
+```
+
+Alternatively, you can build a container image using the Spring Boot build plugin:
 
 ```bash
 ./mvnw spring-boot:build-image
+```
+
+## Deploy to Azure Kubernetes Service (AKS)
+
+This application can be deployed to Azure Kubernetes Service with full infrastructure automation. The deployment includes:
+
+- Azure Kubernetes Service (AKS) cluster
+- Azure Container Registry (ACR) for container images
+- Azure Database for PostgreSQL for data persistence
+- Azure Key Vault for secrets management
+- Application Insights for monitoring
+- Complete CI/CD pipeline with GitHub Actions
+
+See the [Azure AKS Deployment Guide](docs/AZURE-AKS-DEPLOYMENT.md) for detailed instructions.
+
+Quick start:
+
+```bash
+# 1. Provision Azure infrastructure
+./scripts/provision-azure.sh
+
+# 2. Deploy the application
+./scripts/deploy-app.sh
 ```
 
 ## In case you find a bug/suggested improvement for Spring Petclinic

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "environmentName": {
+      "value": "dev"
+    },
+    "postgresAdminUsername": {
+      "value": "petclinicadmin"
+    },
+    "postgresAdminPassword": {
+      "value": "REPLACE_WITH_SECURE_PASSWORD"
+    },
+    "aksNodeCount": {
+      "value": 2
+    },
+    "aksNodeVmSize": {
+      "value": "Standard_D2s_v3"
+    }
+  }
+}
