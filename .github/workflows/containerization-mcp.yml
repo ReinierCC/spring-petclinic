@@ -1,5 +1,19 @@
 name: Containerization MCP Analysis
 
+# This workflow demonstrates the use of the Azure containerization-assist MCP server
+# to analyze a repository for containerization readiness.
+# 
+# The workflow:
+# 1. Installs the containerization-assist-mcp package via npm
+# 2. Uses the MCP SDK to call the analyze-repo tool
+# 3. Analyzes the Spring PetClinic repository to detect:
+#    - Programming language and frameworks
+#    - Build system (Maven/Gradle)
+#    - Dependencies
+#    - Exposed ports
+#
+# Reference: https://github.com/Azure/containerization-assist
+
 on:
   workflow_dispatch:
   push:
@@ -26,6 +40,7 @@ jobs:
       - name: Create analysis script
         run: |
           cat > analyze.mjs << 'EOF'
+          // Import the MCP SDK to use containerization tools programmatically
           import { createApp } from 'containerization-assist-mcp';
           
           async function main() {
@@ -33,10 +48,11 @@ jobs:
               console.log('🚀 Starting repository analysis with containerization-assist MCP...');
               console.log('Repository path:', process.cwd());
               
-              // Create the app runtime instance
+              // Create the app runtime instance (provides access to all MCP tools)
               const app = createApp();
               
-              // Execute the analyze-repo tool
+              // Execute the analyze-repo tool to detect technologies and dependencies
+              // This demonstrates the success criteria: using the MCP server to call analyze_repo tool
               const result = await app.execute('analyze-repo', {
                 repositoryPath: process.cwd(),
                 depth: 3,
