@@ -44,6 +44,8 @@ out/
 
 ### Node.js (workflow artifacts) ###
 node_modules/
+package.json
+package-lock.json
 analyze.mjs
 .package-lock.json
 
