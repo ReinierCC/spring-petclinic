@@ -41,12 +41,9 @@ docker-compose.yml
 src/test
 
 # Development
-.mvn
 .gradle
 gradlew
 gradlew.bat
-mvnw
-mvnw.cmd
 
 # Azure and K8s (not needed in image)
 .azure

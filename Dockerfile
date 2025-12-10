@@ -4,12 +4,21 @@
 FROM eclipse-temurin:17-jdk-jammy AS build
 WORKDIR /workspace/app
 
-COPY mvnw .
+# Copy Maven wrapper and pom.xml first for better caching
 COPY .mvn .mvn
+COPY mvnw .
 COPY pom.xml .
+
+# Download dependencies (cached layer)
+RUN ./mvnw dependency:go-offline -B || true
+
+# Copy source code
 COPY src src
 
-RUN ./mvnw install -DskipTests
+# Build the application
+RUN ./mvnw package -DskipTests -B
+
+# Extract layers
 RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 
 # Runtime stage
