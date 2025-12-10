@@ -42,15 +42,6 @@ out/
 ### VS Code ###
 .vscode/
 
-### Node.js workflow artifacts ###
-# These files are generated dynamically by the containerization-mcp workflow
-# and should not be committed as this is primarily a Java project
-node_modules/
-/package.json
-/package-lock.json
-analyze.mjs
-.package-lock.json
-
 ### CSS ###
 _site/
 *.css

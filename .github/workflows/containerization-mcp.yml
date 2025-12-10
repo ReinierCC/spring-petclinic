@@ -4,8 +4,8 @@ name: Containerization MCP Analysis
 # to analyze a repository for containerization readiness.
 # 
 # The workflow:
-# 1. Installs the containerization-assist-mcp package via npm
-# 2. Uses the MCP SDK to call the analyze-repo tool
+# 1. Uses npx to install containerization-assist-mcp on-the-fly
+# 2. Executes the analyze-repo tool via the MCP SDK
 # 3. Analyzes the current repository to detect:
 #    - Programming language and frameworks
 #    - Build system (Maven/Gradle)
@@ -36,72 +36,27 @@ jobs:
         with:
           node-version: '22'
       
-      - name: Create analysis script
+      - name: Run analyze-repo tool using npx
         run: |
-          cat > analyze.mjs << 'EOF'
-          // Import the MCP SDK to use containerization tools programmatically
-          import { createApp } from 'containerization-assist-mcp';
-          
-          async function main() {
-            try {
-              console.log('🚀 Starting repository analysis with containerization-assist MCP...');
-              console.log('Repository path:', process.cwd());
-              
-              // Create the app runtime instance (provides access to all MCP tools)
-              const app = createApp();
-              
-              // Execute the analyze-repo tool to detect technologies and dependencies
-              // This demonstrates the success criteria: using the MCP server to call analyze-repo tool
-              const result = await app.execute('analyze-repo', {
-                repositoryPath: process.cwd(),
-                depth: 3,
-                includeTests: false
-              });
-              
-              if (result.ok) {
-                console.log('\n✅ Analysis successful!');
-                console.log('\n📊 Analysis Results:');
-                console.log(JSON.stringify(result.value, null, 2));
-                
-                // Display detected modules
-                if (result.value.modules && result.value.modules.length > 0) {
-                  console.log('\n🔍 Detected Modules:');
-                  result.value.modules.forEach(module => {
-                    console.log(`  - ${module.name} (${module.language || 'unknown'})`);
-                    if (module.frameworks && module.frameworks.length > 0) {
-                      console.log(`    Frameworks: ${module.frameworks.map(f => f.name).join(', ')}`);
-                    }
-                  });
-                }
-                
-                console.log('\n✨ Successfully called analyze-repo tool via MCP server!');
-                process.exit(0);
-              } else {
-                console.error('\n❌ Analysis failed:', result.error);
-                process.exit(1);
+          # Use npx to install and run the analysis in one command
+          npx -y containerization-assist-mcp@latest node --input-type=module -e "
+            import { createApp } from 'containerization-assist-mcp';
+            const app = createApp();
+            const result = await app.execute('analyze-repo', {
+              repositoryPath: process.cwd(),
+              depth: 3,
+              includeTests: false
+            });
+            if (result.ok) {
+              console.log('✅ Analysis successful!');
+              console.log(JSON.stringify(result.value, null, 2));
+              if (result.value.modules?.length) {
+                console.log('\n🔍 Detected:', result.value.modules.map(m => 
+                  \`\${m.name} (\${m.language})\`).join(', '));
               }
-            } catch (error) {
-              console.error('\n❌ Error during analysis:', error.message);
-              console.error('Stack trace:', error.stack);
+              console.log('\n✨ Successfully called analyze-repo tool!');
+            } else {
+              console.error('❌ Failed:', result.error);
               process.exit(1);
             }
-          }
-          
-          main();
-          EOF
-      
-      - name: Run analyze-repo tool
-        run: |
-          # Install containerization-assist-mcp package 
-          npm install containerization-assist-mcp
-          # Run the analysis script that calls the MCP server's analyze-repo tool
-          node analyze.mjs
-      
-      - name: Upload analysis results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: containerization-analysis
-          path: |
-            analyze.mjs
-          retention-days: 5
+          "
