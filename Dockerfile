@@ -4,20 +4,14 @@ FROM eclipse-temurin:17-jdk-jammy AS builder
 
 WORKDIR /workspace/app
 
-# Copy Maven wrapper and pom.xml
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
+# Copy all files needed for build
+COPY . .
 
-# Download dependencies (cached layer)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy source code
-COPY src src
-
-# Build the application
-RUN ./mvnw package -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+# Build the application (Maven wrapper will download dependencies as needed)
+RUN chmod +x mvnw && \
+    ./mvnw package -DskipTests -Dmaven.test.skip=true && \
+    mkdir -p target/dependency && \
+    (cd target/dependency; jar -xf ../*.jar)
 
 # Stage 2: Create the runtime image
 FROM eclipse-temurin:17-jre-jammy
