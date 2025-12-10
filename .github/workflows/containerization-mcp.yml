@@ -34,9 +34,6 @@ jobs:
         with:
           node-version: '22'
       
-      - name: Install containerization-assist-mcp
-        run: npm install -g containerization-assist-mcp
-      
       - name: Create analysis script
         run: |
           cat > analyze.mjs << 'EOF'
@@ -92,7 +89,11 @@ jobs:
           EOF
       
       - name: Run analyze-repo tool
-        run: node analyze.mjs
+        run: |
+          # Install containerization-assist-mcp package 
+          npm install containerization-assist-mcp
+          # Run the analysis script that calls the MCP server's analyze-repo tool
+          node analyze.mjs
       
       - name: Upload analysis results
         if: always()

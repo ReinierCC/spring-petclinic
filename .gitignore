@@ -42,6 +42,13 @@ out/
 ### VS Code ###
 .vscode/
 
+### Node.js ###
+node_modules/
+package.json
+package-lock.json
+*.mjs
+.package-lock.json
+
 ### CSS ###
 _site/
 *.css
