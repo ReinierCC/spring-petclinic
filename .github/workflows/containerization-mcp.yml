@@ -1,0 +1,88 @@
+name: Containerization MCP Analysis
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze-repo:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      
+      - name: Install containerization-assist-mcp
+        run: npm install -g containerization-assist-mcp
+      
+      - name: Create analysis script
+        run: |
+          cat > analyze.mjs << 'EOF'
+          import { createApp } from 'containerization-assist-mcp';
+          
+          async function main() {
+            try {
+              console.log('🚀 Starting repository analysis with containerization-assist MCP...');
+              console.log('Repository path:', process.cwd());
+              
+              // Create the app runtime instance
+              const app = createApp();
+              
+              // Execute the analyze-repo tool
+              const result = await app.execute('analyze-repo', {
+                repositoryPath: process.cwd(),
+                depth: 3,
+                includeTests: false
+              });
+              
+              if (result.ok) {
+                console.log('\n✅ Analysis successful!');
+                console.log('\n📊 Analysis Results:');
+                console.log(JSON.stringify(result.value, null, 2));
+                
+                // Display detected modules
+                if (result.value.modules && result.value.modules.length > 0) {
+                  console.log('\n🔍 Detected Modules:');
+                  result.value.modules.forEach(module => {
+                    console.log(`  - ${module.name} (${module.language || 'unknown'})`);
+                    if (module.frameworks && module.frameworks.length > 0) {
+                      console.log(`    Frameworks: ${module.frameworks.map(f => f.name).join(', ')}`);
+                    }
+                  });
+                }
+                
+                console.log('\n✨ Successfully called analyze-repo tool via MCP server!');
+                process.exit(0);
+              } else {
+                console.error('\n❌ Analysis failed:', result.error);
+                process.exit(1);
+              }
+            } catch (error) {
+              console.error('\n❌ Error during analysis:', error.message);
+              console.error('Stack trace:', error.stack);
+              process.exit(1);
+            }
+          }
+          
+          main();
+          EOF
+      
+      - name: Run analyze-repo tool
+        run: node analyze.mjs
+      
+      - name: Upload analysis results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: containerization-analysis
+          path: |
+            analyze.mjs
+          retention-days: 5
