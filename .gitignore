@@ -50,3 +50,5 @@ _site/
 ### Azure ###
 .azure/
 !.azure/.gitkeep
+.env
+.env.local
