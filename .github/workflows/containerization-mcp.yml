@@ -6,7 +6,7 @@ name: Containerization MCP Analysis
 # The workflow:
 # 1. Installs the containerization-assist-mcp package via npm
 # 2. Uses the MCP SDK to call the analyze-repo tool
-# 3. Analyzes the Spring PetClinic repository to detect:
+# 3. Analyzes the current repository to detect:
 #    - Programming language and frameworks
 #    - Build system (Maven/Gradle)
 #    - Dependencies
