@@ -32,13 +32,13 @@ build/
 .gradle/
 gradle/wrapper/gradle-wrapper.jar
 
-# Documentation
-*.md
+# Documentation (excluding from image to reduce size, keep README if needed)
+# *.md
 LICENSE.txt
 docs/
 
-# Docker
-Dockerfile*
+# Docker (excluding to reduce context size)
+# Dockerfile* can be included for traceability if needed
 docker-compose.yml
 .dockerignore
 
@@ -52,5 +52,5 @@ Thumbs.db
 # Logs
 *.log
 
-# Test files
-src/test/
+# Test files (keeping for build, excluding from final image via multi-stage build)
+# src/test/
