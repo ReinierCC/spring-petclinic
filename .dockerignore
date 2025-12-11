@@ -1,0 +1,53 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# IDE
+.idea
+.vscode
+.settings
+.project
+.classpath
+*.iml
+*.iws
+*.ipr
+
+# Build artifacts
+target/
+build/
+out/
+*.jar
+*.war
+*.ear
+*.class
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs/
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Kubernetes
+k8s/
+
+# Test
+*.test
+
+# Other
+.editorconfig
+.gitpod.yml
