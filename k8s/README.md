@@ -16,20 +16,23 @@ Before deploying to Kubernetes, you need to build and push the Docker image:
 # Build the application
 ./mvnw package -DskipTests
 
-# Build the Docker image
-docker build -t <your-registry>/spring-petclinic:latest .
+# Build the Docker image (use a specific version tag)
+docker build -t <your-registry>/spring-petclinic:1.0.0 .
 
 # Push to your registry (DockerHub, GCR, ECR, etc.)
-docker push <your-registry>/spring-petclinic:latest
+docker push <your-registry>/spring-petclinic:1.0.0
 ```
 
 ## Update the Image Reference
 
-Update the image reference in `petclinic.yml` to point to your registry:
+Update the image reference in `petclinic.yml` to point to your registry with a specific version:
 
 ```yaml
-image: <your-registry>/spring-petclinic:latest
+image: <your-registry>/spring-petclinic:1.0.0
+imagePullPolicy: IfNotPresent
 ```
+
+**Note:** Using a specific version tag instead of `latest` is recommended for production deployments to ensure predictable and reproducible deployments.
 
 ## Deployment
 

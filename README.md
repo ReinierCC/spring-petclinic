@@ -46,10 +46,10 @@ You can build a container image using the provided `Dockerfile`:
 ./mvnw package -DskipTests
 
 # Build the Docker image
-docker build -t spring-petclinic:latest .
+docker build -t spring-petclinic:1.0.0 .
 
 # Run the container
-docker run -p 8080:8080 spring-petclinic:latest
+docker run -p 8080:8080 spring-petclinic:1.0.0
 ```
 
 Alternatively, you can use the Spring Boot build plugin (if you have a docker daemon):
