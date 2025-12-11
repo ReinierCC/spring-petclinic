@@ -17,14 +17,10 @@
 *.iws
 *.ipr
 
-# Build artifacts
+# Build artifacts (but keep mvnw and gradle wrapper)
 target/
 build/
 out/
-*.jar
-*.war
-*.ear
-*.class
 
 # Logs
 *.log
@@ -38,7 +34,6 @@ Thumbs.db
 docs/
 
 # Docker
-Dockerfile
 .dockerignore
 docker-compose.yml
 
@@ -51,3 +46,4 @@ k8s/
 # Other
 .editorconfig
 .gitpod.yml
+.devcontainer
