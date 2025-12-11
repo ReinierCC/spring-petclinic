@@ -39,11 +39,44 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Building a Container
 
-There is no `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
+This project includes a multi-stage `Dockerfile` for building and running the application in a container. You can build a container image using:
+
+```bash
+docker build -t spring-petclinic:latest .
+```
+
+The Dockerfile uses a multi-stage build process:
+- **Build stage**: Compiles the application using Maven in an Eclipse Temurin JDK 17 image
+- **Runtime stage**: Runs the application in a minimal Eclipse Temurin JRE 17 image with a non-root user for security
+
+Alternatively, you can build a container image using the Spring Boot build plugin:
 
 ```bash
 ./mvnw spring-boot:build-image
 ```
+
+## Deploying to Kubernetes
+
+Kubernetes manifests are available in the `k8s/` directory:
+
+- `k8s/petclinic.yml` - Deployment and Service for the PetClinic application
+- `k8s/db.yml` - PostgreSQL database deployment with secrets
+
+To deploy to a Kubernetes cluster:
+
+```bash
+# Deploy the database
+kubectl apply -f k8s/db.yml
+
+# Deploy the application
+kubectl apply -f k8s/petclinic.yml
+
+# Check the deployment status
+kubectl get pods
+kubectl get services
+```
+
+The application will be available via NodePort. Use `kubectl get svc petclinic` to find the assigned port.
 
 ## In case you find a bug/suggested improvement for Spring Petclinic
 
