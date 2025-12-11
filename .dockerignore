@@ -1,0 +1,56 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitpod.yml
+
+# IDE
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings
+.devcontainer
+
+# Build outputs
+target/
+build/
+*.class
+*.jar
+*.war
+
+# Maven
+# Note: .mvn directory needed for Maven wrapper builds
+
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
+
+# Documentation
+*.md
+LICENSE.txt
+docs/
+
+# Docker
+Dockerfile*
+docker-compose.yml
+.dockerignore
+
+# Kubernetes
+k8s/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test files
+src/test/
