@@ -39,11 +39,28 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Building a Container
 
-There is no `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
+You can build a container image using the provided `Dockerfile`:
+
+```bash
+# Build the application
+./mvnw package -DskipTests
+
+# Build the Docker image
+docker build -t spring-petclinic:latest .
+
+# Run the container
+docker run -p 8080:8080 spring-petclinic:latest
+```
+
+Alternatively, you can use the Spring Boot build plugin (if you have a docker daemon):
 
 ```bash
 ./mvnw spring-boot:build-image
 ```
+
+## Kubernetes Deployment
+
+This project includes Kubernetes manifests for deploying to a Kubernetes cluster. See the [k8s/README.md](k8s/README.md) for detailed instructions on deploying to Kubernetes.
 
 ## In case you find a bug/suggested improvement for Spring Petclinic
 
