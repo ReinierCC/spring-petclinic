@@ -39,11 +39,32 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Building a Container
 
-There is no `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
+A `Dockerfile` is included in this project for containerization. You can build a container image using Docker:
+
+```bash
+docker build -t spring-petclinic .
+```
+
+Alternatively, you can use the Spring Boot build plugin:
 
 ```bash
 ./mvnw spring-boot:build-image
 ```
+
+## Deploy to Azure
+
+This application can be easily deployed to Azure using Azure Developer CLI (azd). See the [Azure Deployment Guide](AZURE_DEPLOYMENT.md) for detailed instructions.
+
+**Quick Start:**
+
+```bash
+# Install Azure Developer CLI
+# Then run:
+azd auth login
+azd up
+```
+
+This will provision all required Azure resources (Container Apps, PostgreSQL, Container Registry, etc.) and deploy the application.
 
 ## In case you find a bug/suggested improvement for Spring Petclinic
 
