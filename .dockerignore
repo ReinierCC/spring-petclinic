@@ -1,0 +1,50 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+
+# IDE
+.idea
+.vscode
+.settings
+.classpath
+.project
+*.iml
+*.iws
+
+# Build artifacts
+target
+build
+out
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+LICENSE.txt
+
+# Docker
+docker-compose.yml
+
+# Tests
+src/test
+
+# Development
+.gradle
+gradlew
+gradlew.bat
+
+# Azure and K8s (not needed in image)
+.azure
+k8s

@@ -1,0 +1,131 @@
+name: Deploy to Azure AKS
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+
+env:
+  RESOURCE_GROUP: rg-petclinic-${{ github.event.inputs.environment || 'dev' }}
+  AKS_CLUSTER_NAME: aks-petclinic-${{ github.event.inputs.environment || 'dev' }}
+  IMAGE_NAME: petclinic
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build with Maven
+        run: ./mvnw clean package -DskipTests
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get ACR name
+        id: get-acr
+        run: |
+          ACR_NAME=$(az acr list --resource-group ${{ env.RESOURCE_GROUP }} --query "[0].name" -o tsv)
+          echo "acr_name=$ACR_NAME" >> $GITHUB_OUTPUT
+          echo "acr_login_server=$ACR_NAME.azurecr.io" >> $GITHUB_OUTPUT
+
+      - name: Build and push Docker image
+        run: |
+          az acr build \
+            --registry ${{ steps.get-acr.outputs.acr_name }} \
+            --image ${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            --image ${{ env.IMAGE_NAME }}:latest \
+            --file Dockerfile \
+            .
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Get AKS credentials
+        run: |
+          az aks get-credentials \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --name ${{ env.AKS_CLUSTER_NAME }} \
+            --overwrite-existing
+
+      - name: Get Key Vault name
+        id: get-keyvault
+        run: |
+          KV_NAME=$(az keyvault list --resource-group ${{ env.RESOURCE_GROUP }} --query "[0].name" -o tsv)
+          echo "kv_name=$KV_NAME" >> $GITHUB_OUTPUT
+
+      - name: Get database credentials from Key Vault
+        id: get-secrets
+        run: |
+          POSTGRES_URL=$(az keyvault secret show --vault-name ${{ steps.get-keyvault.outputs.kv_name }} --name postgres-connection-string --query value -o tsv)
+          POSTGRES_USER=$(az keyvault secret show --vault-name ${{ steps.get-keyvault.outputs.kv_name }} --name postgres-username --query value -o tsv)
+          POSTGRES_PASS=$(az keyvault secret show --vault-name ${{ steps.get-keyvault.outputs.kv_name }} --name postgres-password --query value -o tsv)
+          
+          echo "::add-mask::$POSTGRES_URL"
+          echo "::add-mask::$POSTGRES_USER"
+          echo "::add-mask::$POSTGRES_PASS"
+          
+          echo "postgres_url=$POSTGRES_URL" >> $GITHUB_OUTPUT
+          echo "postgres_user=$POSTGRES_USER" >> $GITHUB_OUTPUT
+          echo "postgres_pass=$POSTGRES_PASS" >> $GITHUB_OUTPUT
+
+      - name: Create namespace
+        run: |
+          kubectl create namespace petclinic --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Create Kubernetes secret
+        run: |
+          kubectl create secret generic postgres-secret \
+            --from-literal=SPRING_DATASOURCE_URL="${{ steps.get-secrets.outputs.postgres_url }}" \
+            --from-literal=SPRING_DATASOURCE_USERNAME="${{ steps.get-secrets.outputs.postgres_user }}" \
+            --from-literal=SPRING_DATASOURCE_PASSWORD="${{ steps.get-secrets.outputs.postgres_pass }}" \
+            --namespace=petclinic \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy to AKS
+        run: |
+          sed "s|ACR_LOGIN_SERVER|${{ steps.get-acr.outputs.acr_login_server }}|g" k8s/petclinic-aks.yml | \
+          sed "s|:latest|:${{ github.sha }}|g" | \
+          kubectl apply -f -
+
+      - name: Wait for deployment
+        run: |
+          kubectl wait --for=condition=available --timeout=300s deployment/petclinic -n petclinic
+
+      - name: Get service endpoint
+        run: |
+          echo "Waiting for LoadBalancer IP..."
+          sleep 30
+          kubectl get service petclinic -n petclinic
+          EXTERNAL_IP=$(kubectl get service petclinic -n petclinic -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          if [ -n "$EXTERNAL_IP" ]; then
+            echo "Application is available at: http://$EXTERNAL_IP"
+          else
+            echo "LoadBalancer IP not yet assigned. Check later with: kubectl get service petclinic -n petclinic"
+          fi
