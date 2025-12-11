@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# IDE
+.idea
+.vscode
+.settings
+.project
+.classpath
+*.iml
+*.iws
+*.ipr
+
+# Build artifacts (but keep mvnw and gradle wrapper)
+target/
+build/
+out/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+*.md
+docs/
+
+# Docker
+.dockerignore
+docker-compose.yml
+
+# Kubernetes
+k8s/
+
+# Test
+*.test
+
+# Other
+.editorconfig
+.gitpod.yml
+.devcontainer

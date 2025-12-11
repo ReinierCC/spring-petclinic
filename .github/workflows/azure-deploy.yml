@@ -1,0 +1,83 @@
+name: Deploy to Azure
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'k8s/**'
+      - '**.md'
+      - '.github/workflows/maven-build.yml'
+      - '.github/workflows/gradle-build.yml'
+      - '.github/workflows/deploy-and-test-cluster.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: azure-${{ github.event.inputs.environment || 'dev' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Install Azure Developer CLI
+        run: |
+          curl -fsSL https://aka.ms/install-azd.sh | bash
+
+      - name: Log in to Azure using OIDC
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Set up azd environment
+        run: |
+          azd env new ${{ secrets.AZURE_ENV_NAME }} --no-prompt || true
+          azd env set AZURE_SUBSCRIPTION_ID ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          azd env set AZURE_LOCATION ${{ secrets.AZURE_LOCATION }}
+          azd env set AZURE_RESOURCE_GROUP ${{ secrets.AZURE_RESOURCE_GROUP }}
+          azd env set POSTGRES_ADMIN_USER ${{ secrets.POSTGRES_ADMIN_USER }}
+          azd env set POSTGRES_ADMIN_PASSWORD ${{ secrets.POSTGRES_ADMIN_PASSWORD }}
+
+      - name: Provision and Deploy to Azure
+        run: |
+          azd up --no-prompt
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          AZURE_ENV_NAME: ${{ secrets.AZURE_ENV_NAME }}
+          AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }}
+
+      - name: Get Application URL
+        id: app-url
+        run: |
+          APP_URL=$(azd env get-values | grep AZURE_CONTAINER_APP_URL | cut -d'=' -f2 | tr -d '"')
+          echo "url=$APP_URL" >> $GITHUB_OUTPUT
+
+      - name: Display Deployment Info
+        run: |
+          echo "🚀 Deployment completed successfully!"
+          echo "Application URL: ${{ steps.app-url.outputs.url }}"
+          echo "Environment: ${{ github.event.inputs.environment || 'dev' }}"
+          echo "Resource Group: ${{ secrets.AZURE_RESOURCE_GROUP }}"
