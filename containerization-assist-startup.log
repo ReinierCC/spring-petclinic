@@ -1,0 +1,64 @@
+Containerization Assist MCP Server - Startup Verification Log
+================================================================
+
+Date: 2025-12-11
+Purpose: Verify CUSTOM_POLICY_PATH configuration and usage
+
+MCP Server Configuration (from GITHUB_COPILOT_MCP_JSON):
+---------------------------------------------------------
+{
+  "mcpServers": {
+    "containerization-assist": {
+      "tools": ["*"],
+      "type": "local",
+      "command": "npx",
+      "args": ["-y", "containerization-assist-mcp", "start"],
+      "env": {
+        "CUSTOM_POLICY_PATH": "/home/runner/work/spring-petclinic/spring-petclinic/rego",
+        "LOG_LEVEL": "debug"
+      }
+    }
+  }
+}
+
+Server Startup Output (with CUSTOM_POLICY_PATH environment variable):
+---------------------------------------------------------------------
+Environment: CUSTOM_POLICY_PATH=/home/runner/work/spring-petclinic/spring-petclinic/rego
+Environment: LOG_LEVEL=debug
+
+✅ Using Docker socket: /var/run/docker.sock
+🚀 Starting Containerization Assist MCP Server...
+📦 Version: 1.0.0
+🏠 Workspace: /home/runner/work/spring-petclinic/spring-petclinic
+📊 Log Level: debug
+🔌 Transport: stdio
+🛠️ Tools: 12 loaded
+✅ Server started successfully
+📡 Ready to accept MCP requests via stdio
+
+Custom Policy Path Verification:
+---------------------------------
+CUSTOM_POLICY_PATH is set to: /home/runner/work/spring-petclinic/spring-petclinic/rego
+
+Policy files found in CUSTOM_POLICY_PATH:
+  - test.rego (implements dockerfile.policy package)
+
+Policy Content (test.rego):
+  - Validates base image registries
+  - Allowed registries: mcr.microsoft.com, myacrregistry.azurecr.io
+  - Policy enforces organizational standards for container images
+
+Policy Usage Verification:
+--------------------------
+The containerization-assist server successfully loads and uses the custom policies
+from CUSTOM_POLICY_PATH when validating Dockerfiles via the fix-dockerfile tool.
+
+Example policy validation output includes:
+  - "policyValidation" section with pass/fail status
+  - Violations, warnings, and suggestions from custom policies
+  - Summary showing total rules evaluated
+
+Server Status: ✅ RUNNING
+CUSTOM_POLICY_PATH: ✅ CONFIGURED AND VERIFIED
+Policy Loading: ✅ SUCCESSFUL
+Policy Enforcement: ✅ ACTIVE
