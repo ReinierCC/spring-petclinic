@@ -1,0 +1,62 @@
+name: Containerization MCP Analysis
+
+# This workflow demonstrates the use of the Azure containerization-assist MCP server
+# to analyze a repository for containerization readiness.
+# 
+# The workflow:
+# 1. Uses npx to install containerization-assist-mcp on-the-fly
+# 2. Executes the analyze-repo tool via the MCP SDK
+# 3. Analyzes the current repository to detect:
+#    - Programming language and frameworks
+#    - Build system (Maven/Gradle)
+#    - Dependencies
+#    - Exposed ports
+#
+# Reference: https://github.com/Azure/containerization-assist
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  analyze-repo:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      
+      - name: Run analyze-repo tool using npx
+        run: |
+          # Use npx to install and run the analysis in one command
+          npx -y containerization-assist-mcp@latest node --input-type=module -e "
+            import { createApp } from 'containerization-assist-mcp';
+            const app = createApp();
+            const result = await app.execute('analyze-repo', {
+              repositoryPath: process.cwd(),
+              depth: 3,
+              includeTests: false
+            });
+            if (result.ok) {
+              console.log('✅ Analysis successful!');
+              console.log(JSON.stringify(result.value, null, 2));
+              if (result.value.modules?.length) {
+                console.log('\n🔍 Detected:', result.value.modules.map(m => 
+                  \\\`\\\${m.name} (\\\${m.language})\\\`).join(', '));
+              }
+              console.log('\n✨ Successfully called analyze-repo tool!');
+            } else {
+              console.error('❌ Failed:', result.error);
+              process.exit(1);
+            }
+          "
