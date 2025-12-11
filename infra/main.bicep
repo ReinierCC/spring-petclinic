@@ -231,6 +231,8 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
         external: true
         targetPort: 8080
         transport: 'auto'
+        // NOTE: CORS policy allows all origins for development/demo purposes.
+        // In production, restrict allowedOrigins to specific domains.
         corsPolicy: {
           allowedOrigins: ['*']
           allowedMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
@@ -243,6 +245,9 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
           identity: managedIdentity.id
         }
       ]
+      // NOTE: Using direct secrets instead of Key Vault references initially to avoid
+      // managed identity access issues. After deployment, can switch to Key Vault references
+      // by adding Container App IP to Key Vault network rules.
       secrets: [
         {
           name: 'postgres-url'
@@ -266,6 +271,8 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
       containers: [
         {
           name: 'petclinic'
+          // NOTE: This placeholder image is replaced by Azure Developer CLI (azd) during deployment
+          // with the actual built application image from Azure Container Registry
           image: 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
           resources: {
             cpu: json('0.5')

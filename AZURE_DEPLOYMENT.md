@@ -156,6 +156,29 @@ When you're done, you can delete all Azure resources:
 azd down --force --no-prompt
 ```
 
+## Security Notes
+
+### Database Credentials Storage
+
+The initial deployment stores database credentials directly in Container Apps secrets for simplicity and to avoid managed identity access issues during first deployment. 
+
+For enhanced security in production:
+
+1. Database credentials are also stored in Azure Key Vault
+2. After initial deployment, you can switch to using Key Vault references:
+   - Get the Container App's outbound IP address
+   - Add it to Key Vault's network rules
+   - Update Container Apps configuration to use Key Vault references
+   - Set Key Vault's `defaultAction` to `Deny`
+
+### CORS Configuration
+
+The Container Apps ingress is configured to allow all origins (`*`) for development/demo purposes. In production environments, you should:
+
+1. Update the Bicep template to specify allowed origins
+2. Restrict CORS to only your frontend domains
+3. Redeploy the infrastructure
+
 ## Troubleshooting
 
 ### Issue: PostgreSQL deployment fails with quota error
