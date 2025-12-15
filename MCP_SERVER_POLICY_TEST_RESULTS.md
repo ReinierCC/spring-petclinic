@@ -25,6 +25,7 @@ The containerization-assist MCP server is configured with the following settings
       "env": {
         "CUSTOM_POLICY_PATH": "/home/runner/work/spring-petclinic/spring-petclinic/test.rego"
       }
+      // Note: A symlink was created from test.rego -> rego/test.rego for compatibility
     }
   }
 }

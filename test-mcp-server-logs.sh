@@ -68,7 +68,7 @@ echo
 
 # Check if test.rego is mentioned in environment or startup
 echo "7. Checking if policy file path is referenced..."
-if grep -q "test.rego\|CUSTOM_POLICY_PATH\|policy\|rego" "$LOG_FILE"; then
+if grep -qi "test.rego\|CUSTOM_POLICY_PATH\|policy.*rego\|rego.*file" "$LOG_FILE"; then
     echo "✅ SUCCESS: Found references to policy/rego in server logs!"
     echo
     echo "Matching lines:"

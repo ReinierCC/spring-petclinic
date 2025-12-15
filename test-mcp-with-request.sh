@@ -60,8 +60,7 @@ timeout 30s bash -c '
   npx -y containerization-assist-mcp start --log-level debug 2>&1 &
   SERVER_PID=$!
   sleep 8
-  echo "Server should be ready, logs so far:" >&2
-  cat /tmp/mcp-logs/ca-mcp-full-test-*.log 2>/dev/null | tail -20 || true
+  echo "Server should be ready" >&2
   wait $SERVER_PID 2>/dev/null || true
 ' > "$LOG_FILE" 2>&1 || true
 
@@ -79,7 +78,7 @@ echo
 echo "6. Searching for policy/rego references in logs..."
 echo
 
-if grep -qi "test.rego\|custom.*policy\|rego.*file\|policy.*path" "$LOG_FILE"; then
+if grep -qi "test.rego\|custom.*policy\|rego.*file\|policy.*path\|CUSTOM_POLICY" "$LOG_FILE"; then
     echo "✅ SUCCESS: Found references to test.rego or policy configuration!"
     echo
     echo "Matching log lines:"
