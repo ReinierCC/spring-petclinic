@@ -50,12 +50,12 @@ docker run -p 8080:8080 spring-petclinic:latest
 
 ### Run with MySQL using docker-compose:
 ```bash
-docker-compose up
+docker-compose up petclinic-mysql mysql
 ```
 
 ### Run with PostgreSQL using docker-compose:
 ```bash
-docker-compose up postgres
+docker-compose up petclinic-postgres postgres
 ```
 
 ## Accessing the Application
