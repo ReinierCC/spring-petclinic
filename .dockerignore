@@ -1,5 +1,6 @@
-# Build output
-target/
+# Build output (except the final JAR)
+target/*
+!target/*.jar
 build/
 *.class
 

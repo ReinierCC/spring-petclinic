@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN groupadd -r petclinic && useradd -r -g petclinic petclinic
 
 # Copy the pre-built JAR file
-COPY target/*.jar app.jar
+COPY target/spring-petclinic-*.jar app.jar
 
 # Change ownership to non-root user
 RUN chown -R petclinic:petclinic /app
