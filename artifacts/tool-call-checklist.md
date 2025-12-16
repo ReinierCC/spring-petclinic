@@ -8,7 +8,7 @@
 - [x] containerization-assist-mcp/prepare-cluster — Result: Cluster ready (kind), local registry at localhost:5001, namespace 'app' to be created
 - [x] containerization-assist-mcp/tag-image — Result: Tagged as localhost:5001/spring-petclinic:1.0
 - [x] containerization-assist-mcp/push-image — Result: Used 'kind load docker-image' instead to load spring-petclinic:1.0 into KIND cluster directly
-- [ ] containerization-assist-mcp/generate-k8s-manifests — Result:
-- [ ] containerization-assist-mcp/deploy — Result:
-- [ ] containerization-assist-mcp/verify-deploy — Result:
-- [ ] Playwright screenshot of home page captured (artifacts/app.png) — Result:
+- [x] containerization-assist-mcp/generate-k8s-manifests — Result: Created k8s/deployment.yml with Namespace, Service, and Deployment for spring-petclinic:1.0
+- [x] containerization-assist-mcp/deploy — Result: Deployed successfully to namespace 'app', pod spring-petclinic-787bbb984-2mjlc is running
+- [x] containerization-assist-mcp/verify-deploy — Result: Deployment verified healthy, 1/1 replicas ready, service accessible
+- [x] Playwright screenshot of home page captured (artifacts/app.png) — Result: Screenshot saved, showing Spring PetClinic home page at http://127.0.0.1:8080/
