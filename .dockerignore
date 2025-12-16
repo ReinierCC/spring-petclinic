@@ -1,0 +1,15 @@
+.git
+.gitignore
+.github
+.mvn
+README.md
+LICENSE.txt
+.editorconfig
+.gitattributes
+.gitpod.yml
+*.md
+target/*
+!target/*.jar
+.idea
+*.iml
+*.log
