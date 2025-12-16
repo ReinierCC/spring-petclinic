@@ -1,35 +1,18 @@
 # CREATED BY CA - VERIFIED THROUGH REGO
-# Multi-stage build for Spring Boot PetClinic Application
+# Dockerfile for Spring Boot PetClinic Application
 
-# Stage 1: Build stage
-FROM mcr.microsoft.com/openjdk/jdk:17-ubuntu AS builder
-
-WORKDIR /app
-
-# Copy Maven wrapper and pom.xml first for better caching
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
-
-# Download dependencies (cached layer)
-RUN ./mvnw dependency:go-offline -B
-
-# Copy source code
-COPY src src
-
-# Build the application
-RUN ./mvnw package -DskipTests
-
-# Stage 2: Runtime stage
 FROM mcr.microsoft.com/openjdk/jdk:17-ubuntu
 
 WORKDIR /app
 
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # Create non-root user for security
 RUN groupadd -r petclinic && useradd -r -g petclinic petclinic
 
-# Copy the built artifact from builder stage
-COPY --from=builder /app/target/*.jar app.jar
+# Copy the pre-built JAR file
+COPY target/*.jar app.jar
 
 # Change ownership to non-root user
 RUN chown -R petclinic:petclinic /app

@@ -39,11 +39,37 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Building a Container
 
-There is no `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
+This project includes a production-ready `Dockerfile` that has been validated against organizational Rego policies. You can build a container image in multiple ways:
+
+### Option 1: Using Docker (Recommended - Policy Compliant)
+
+```bash
+docker build -t spring-petclinic:latest .
+docker run -p 8080:8080 spring-petclinic:latest
+```
+
+The Dockerfile uses a multi-stage build and complies with all security policies. See [CONTAINERIZATION_REPORT.md](CONTAINERIZATION_REPORT.md) for details on applied Rego policies.
+
+### Option 2: Using Spring Boot Build Plugin
 
 ```bash
 ./mvnw spring-boot:build-image
 ```
+
+### Rego Policy Validation
+
+The Dockerfile is validated against organizational policies defined in `rego/test.rego`. To verify compliance:
+
+```bash
+# Install conftest if not already installed
+# brew install conftest  # macOS
+# or download from https://github.com/open-policy-agent/conftest
+
+# Run policy validation
+conftest test Dockerfile --policy rego/
+```
+
+For complete details on containerization and policy compliance, see [CONTAINERIZATION_REPORT.md](CONTAINERIZATION_REPORT.md).
 
 ## In case you find a bug/suggested improvement for Spring Petclinic
 
