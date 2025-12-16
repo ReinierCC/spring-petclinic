@@ -170,8 +170,8 @@ The application exposes Spring Boot Actuator endpoints:
 
 By default, the application uses an H2 in-memory database. For production deployments:
 
-1. **MySQL**: Use the existing `k8s/db.yml` for PostgreSQL, or create similar manifests for MySQL
-2. **PostgreSQL**: Deploy using `k8s/db.yml` and update the application deployment to use the `postgres` profile
+1. **MySQL**: Create similar Kubernetes manifests for MySQL (refer to docker-compose.yml for configuration)
+2. **PostgreSQL**: Deploy using `k8s/db.yml` (PostgreSQL deployment) and update the application deployment to use the `postgres` profile
 
 ## Troubleshooting
 
@@ -209,7 +209,7 @@ The Dockerfile includes several optimizations:
 - Multi-stage build to reduce image size
 - Layer caching for dependencies
 - Separate dependency download step
-- SSL workarounds for build-time Maven downloads
+- SSL workarounds for build-time Maven downloads (Note: These are required due to environment-specific certificate issues. In production environments, ensure proper SSL certificates are configured)
 
 ## Additional Resources
 

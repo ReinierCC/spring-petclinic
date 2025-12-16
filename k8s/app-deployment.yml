@@ -34,7 +34,7 @@ spec:
     spec:
       containers:
         - name: petclinic
-          image: library/spring-petclinic:local
+          image: spring-petclinic:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
