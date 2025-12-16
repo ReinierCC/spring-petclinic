@@ -95,6 +95,11 @@ Or create a local Kubernetes deployment using kind or minikube and load the imag
 - `SPRING_DATASOURCE_USERNAME`: Database username
 - `SPRING_DATASOURCE_PASSWORD`: Database password
 
+**Note**: The default `docker-compose.yml` uses hardcoded credentials for development convenience. For production deployments:
+- Use Docker secrets or external secret management systems
+- Use environment variables from a `.env` file (not committed to version control)
+- Consider using Kubernetes secrets for K8s deployments
+
 ## Security Considerations
 
 - The image runs as a non-root user (`spring:spring`)
