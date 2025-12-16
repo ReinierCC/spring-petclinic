@@ -73,7 +73,20 @@ kubectl apply -f k8s/db.yml
 kubectl apply -f k8s/petclinic.yml
 ```
 
-Note: Update the image reference in `k8s/petclinic.yml` to point to your built image.
+**Note**: The default `k8s/petclinic.yml` uses `dsyer/petclinic` as the image. To use your locally built image:
+
+1. Tag your image appropriately:
+```bash
+docker tag spring-petclinic:latest <your-registry>/spring-petclinic:latest
+docker push <your-registry>/spring-petclinic:latest
+```
+
+2. Update the image reference in `k8s/petclinic.yml`:
+```yaml
+image: <your-registry>/spring-petclinic:latest
+```
+
+Or create a local Kubernetes deployment using kind or minikube and load the image directly.
 
 ## Environment Variables
 

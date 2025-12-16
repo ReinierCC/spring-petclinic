@@ -39,11 +39,47 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Building a Container
 
-There is no `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
+A `Dockerfile` is now available in this project. You can build a container image in several ways:
+
+### Option 1: Using Docker with pre-built JAR (simplest)
+
+```bash
+./mvnw clean package -DskipTests
+docker build -t spring-petclinic:latest .
+```
+
+### Option 2: Using multi-stage Docker build
+
+```bash
+docker build -f Dockerfile.multistage -t spring-petclinic:latest .
+```
+
+### Option 3: Using Spring Boot Build Plugin (Cloud Native Buildpacks)
 
 ```bash
 ./mvnw spring-boot:build-image
 ```
+
+### Running the containerized application
+
+```bash
+docker run -p 8080:8080 spring-petclinic:latest
+```
+
+Or using docker-compose:
+
+```bash
+# Run with H2 (in-memory database)
+docker-compose up petclinic
+
+# Run with MySQL
+docker-compose up petclinic-mysql mysql
+
+# Run with PostgreSQL
+docker-compose up petclinic-postgres postgres
+```
+
+For more details on containerization, see [DOCKER.md](DOCKER.md).
 
 ## In case you find a bug/suggested improvement for Spring Petclinic
 
