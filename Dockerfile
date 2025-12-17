@@ -24,7 +24,8 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN groupadd -r spring && useradd -r -g spring spring
 
 # Copy the built artifact from builder stage
-COPY --from=builder /app/target/*.jar app.jar
+# The Spring Boot Maven plugin creates a single executable JAR in target/
+COPY --from=builder /app/target/spring-petclinic-*.jar app.jar
 
 # Change ownership to non-root user
 RUN chown -R spring:spring /app

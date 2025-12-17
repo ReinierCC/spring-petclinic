@@ -40,5 +40,5 @@ k8s/
 # Policies
 policies.user/
 
-# Test files
+# Test files (excluded since tests are skipped during Docker build with -DskipTests)
 src/test/
