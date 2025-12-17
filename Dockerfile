@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Copy pom.xml and download dependencies (for better layer caching)
 COPY pom.xml .
-RUN mvn dependency:resolve || true
+RUN mvn dependency:go-offline
 
 # Copy source code and build
 COPY src ./src
@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 RUN groupadd -r spring && useradd -r -g spring spring
 
 # Copy application jar
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/spring-petclinic-*.jar app.jar
 
 # Change ownership to non-root user
 RUN chown -R spring:spring /app
