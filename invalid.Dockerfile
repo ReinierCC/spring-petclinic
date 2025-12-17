@@ -5,18 +5,16 @@ WORKDIR /workspace/app
 # Install tar for Maven builds
 RUN apt-get update && apt-get install -y tar curl && rm -rf /var/lib/apt/lists/*
 
-# Copy only POM file first for dependency caching
-COPY pom.xml .
+# Copy dependency files first for optimal caching
+COPY pom.xml ./pom.xml
+COPY mvnw ./mvnw
+COPY .mvn ./.mvn
 
-# Copy Maven wrapper
-COPY mvnw .
-COPY .mvn .mvn
-
-# Download dependencies in a separate layer (cached)
+# Download all dependencies (this layer will be cached)
 RUN ./mvnw dependency:go-offline -B
 
-# Copy source code (changes frequently)
-COPY src src
+# Copy source code
+COPY src ./src
 
 # Build the application
 RUN ./mvnw package -DskipTests
@@ -30,9 +28,13 @@ WORKDIR /app
 RUN groupadd -r spring && useradd -r -g spring spring
 RUN chown -R spring:spring /app
 
-# Copy application files in optimal order for layer caching
+# Copy dependencies first (least likely to change, best for caching)
 COPY --from=build --chown=spring:spring /workspace/app/target/dependency/BOOT-INF/lib ./lib
+
+# Copy metadata
 COPY --from=build --chown=spring:spring /workspace/app/target/dependency/META-INF ./META-INF
+
+# Copy application classes last (most likely to change)
 COPY --from=build --chown=spring:spring /workspace/app/target/dependency/BOOT-INF/classes .
 
 # Switch to non-root user
