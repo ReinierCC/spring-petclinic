@@ -7,6 +7,13 @@ jobs:
   copilot-setup-steps:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare containerization-assist log dir
+        run: |
+          mkdir -p "$HOME/.config/containerization-assist/tool-logs"
+          ls -la "$HOME/.config/containerization-assist/tool-logs"
+
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
