@@ -16,12 +16,15 @@ RUN mvn package -DskipTests
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
+# Install wget for health checks
+RUN apk add --no-cache wget
+
 # Create a non-root user
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
 
 # Copy the built artifact from the build stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/target/spring-petclinic-*.jar app.jar
 
 # Expose the application port
 EXPOSE 8080
