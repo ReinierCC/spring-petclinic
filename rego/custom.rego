@@ -3,7 +3,7 @@ package containerization.registry
 import rego.v1
 
 # ==============================================================================
-# Azure Container Registry Policy
+# 🚨 CUSTOM AZURE REGISTRY POLICY 🚨
 # ==============================================================================
 #
 # This policy enforces:
@@ -12,7 +12,7 @@ import rego.v1
 #
 # ==============================================================================
 
-policy_name := "Azure Registry Enforcement"
+policy_name := "Custom Azure Registry Enforcement"
 policy_version := "1.0"
 policy_category := "compliance"
 
@@ -23,9 +23,7 @@ allowed_registries := {"mcr.microsoft.com", "myacrregistry.azurecr.io"}
 # INPUT TYPE DETECTION
 # ==============================================================================
 
-# Simple detection: if it contains a FROM, treat as Dockerfile
 is_dockerfile if {
-    input.content != ""
     contains(input.content, "FROM ")
 }
 
@@ -40,25 +38,25 @@ input_type := "dockerfile" if {
 # Rule: Enforce allowed registries
 violations contains result if {
     input_type == "dockerfile"
-
+    
     # Extract FROM lines
     from_lines := [line |
         line := split(input.content, "\n")[_]
         regex.match(`(?i)^\s*FROM\s+`, line)
     ]
-
+    
     # Check each FROM line
     some line in from_lines
     image_name := extract_image_name(line)
     not is_allowed_registry(image_name)
-
+    
     result := {
-        "rule":      "enforce-azure-registries",
-        "category":  "compliance",
-        "priority":  95,
-        "severity":  "block",
-        "message":   sprintf("Image '%s' is not from an allowed registry. Must be from MCR (mcr.microsoft.com) or approved ACR (myacrregistry.azurecr.io).", [image_name]),
-        "description": "Enforce Azure Container Registry or MCR images only",
+        "rule": "enforce-azure-registries-CUSTOM-POLICY",
+        "category": "compliance",
+        "priority": 99,
+        "severity": "block",
+        "message": sprintf("🚨 CUSTOM POLICY TRIGGERED 🚨 Image '%s' is NOT from allowed registry. Only MCR (mcr.microsoft.com) or myacrregistry.azurecr.io are permitted!", [image_name]),
+        "description": "Custom Azure Registry Enforcement - Reinier's Policy"
     }
 }
 
@@ -66,14 +64,14 @@ violations contains result if {
 violations contains result if {
     input_type == "dockerfile"
     not has_verification_comment
-
+    
     result := {
-        "rule":      "require-verification-comment",
-        "category":  "compliance",
-        "priority":  90,
-        "severity":  "block",
-        "message":   "Dockerfile must contain the comment '# CREATED BY CA - VERIFIED THROUGH REGO'",
-        "description": "Require verification comment in Dockerfile",
+        "rule": "require-verification-comment-CUSTOM-POLICY",
+        "category": "compliance",
+        "priority": 99,
+        "severity": "block",
+        "message": "🚨 CUSTOM POLICY TRIGGERED 🚨 Dockerfile MUST contain the comment '# CREATED BY CA - VERIFIED THROUGH REGO' to pass validation!",
+        "description": "Require verification comment in Dockerfile - Reinier's Policy"
     }
 }
 
@@ -81,16 +79,11 @@ violations contains result if {
 # HELPER FUNCTIONS
 # ==============================================================================
 
-# Extract image name from a FROM line
-# NOTE: This assumes the form: FROM <image> [AS name]
-# If you use FROM with flags like --platform, you may want to make this more robust.
+# Extract image name from FROM line
 extract_image_name(from_line) := image if {
-    line := trim_space(from_line)
-    parts := regex.split(`\s+`, line)
-
+    # Remove FROM keyword and whitespace
+    parts := regex.split(`\s+`, trim_space(from_line))
     count(parts) >= 2
-    lower(parts[0]) == "from"
-
     image := parts[1]
 }
 
@@ -100,7 +93,7 @@ is_allowed_registry(image_name) if {
     startswith(image_name, registry)
 }
 
-# Check for verification comment anywhere in the Dockerfile
+# Check for verification comment
 has_verification_comment if {
     regex.match(`(?i)#\s*CREATED BY CA - VERIFIED THROUGH REGO`, input.content)
 }
@@ -111,7 +104,6 @@ has_verification_comment if {
 
 # Allow if no blocking violations
 default allow := false
-
 allow if {
     count(violations) == 0
 }
@@ -120,15 +112,16 @@ allow if {
 warnings := []
 suggestions := []
 
-# Result structure (required by containerization-assist)
+# Result structure (required)
 result := {
-    "allow":       allow,
-    "violations":  violations,
-    "warnings":    warnings,
+    "allow": allow,
+    "violations": violations,
+    "warnings": warnings,
     "suggestions": suggestions,
     "summary": {
-        "total_violations":  count(violations),
-        "total_warnings":    0,
+        "total_violations": count(violations),
+        "total_warnings": 0,
         "total_suggestions": 0,
-    },
+        "policy_name": "🚨 CUSTOM REGISTRY POLICY 🚨"
+    }
 }
