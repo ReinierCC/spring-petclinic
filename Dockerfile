@@ -3,19 +3,14 @@
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy Maven wrapper and pom.xml for dependency caching
-COPY .mvn .mvn
-COPY mvnw .
+# Copy pom.xml for better layer caching
 COPY pom.xml .
-
-# Download dependencies (cached if pom.xml hasn't changed)
-RUN ./mvnw dependency:go-offline
 
 # Copy source code
 COPY src src
 
 # Build the application
-RUN ./mvnw package -DskipTests
+RUN mvn package -DskipTests
 
 # Stage 2: Runtime image
 FROM eclipse-temurin:17-jre-alpine
