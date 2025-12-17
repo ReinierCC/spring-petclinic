@@ -28,9 +28,6 @@ Dockerfile
 .dockerignore
 docker-compose.yml
 
-# Test files
-src/test/
-
 # Maven wrapper (using container's maven)
 .mvn/
 mvnw
