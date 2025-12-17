@@ -9,65 +9,71 @@ FROM mcr.microsoft.com/openjdk/jdk:${JAVA_VERSION}-${MARINER_VERSION} AS build
 
 # Add metadata labels
 LABEL maintainer="Spring PetClinic Team" \
-      org.opencontainers.image.title="Spring PetClinic" \
-      org.opencontainers.image.description="Spring PetClinic Sample Application" \
+      org.opencontainers.image.title="Spring PetClinic Build" \
+      org.opencontainers.image.description="Build stage for Spring PetClinic" \
       org.opencontainers.image.version="4.0.0"
 
 WORKDIR /workspace/app
 
-# Copy Maven wrapper and pom.xml first for better caching
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
+# Layer 1: Copy Maven wrapper (rarely changes)
+COPY mvnw ./
+COPY .mvn ./.mvn
 
-# Download dependencies (separate layer for caching)
-RUN ./mvnw dependency:go-offline -B
+# Layer 2: Copy dependency management files (changes less frequently)
+COPY pom.xml ./
 
-# Copy source code
-COPY src src
+# Layer 3: Resolve and download dependencies (cached until pom.xml changes)
+RUN --mount=type=cache,target=/root/.m2 \
+    ./mvnw dependency:go-offline -B
 
-# Build the application
-RUN ./mvnw package -DskipTests
-RUN mkdir -p target/dependency
-RUN cd target/dependency && jar -xf ../*.jar
+# Layer 4: Copy application source (changes most frequently)
+COPY src ./src
 
-# Runtime stage
-FROM mcr.microsoft.com/openjdk/jdk:${JAVA_VERSION}-${MARINER_VERSION}
+# Layer 5: Build application with layer extraction
+RUN --mount=type=cache,target=/root/.m2 \
+    ./mvnw package -DskipTests && \
+    mkdir -p target/dependency && \
+    cd target/dependency && \
+    jar -xf ../*.jar
 
-# Add metadata labels
+# Runtime stage with minimal footprint
+FROM mcr.microsoft.com/openjdk/jdk:${JAVA_VERSION}-${MARINER_VERSION} AS runtime
+
+# Add OCI metadata labels
 LABEL maintainer="Spring PetClinic Team" \
       org.opencontainers.image.title="Spring PetClinic" \
       org.opencontainers.image.description="Spring PetClinic Sample Application" \
-      org.opencontainers.image.version="4.0.0"
+      org.opencontainers.image.version="4.0.0" \
+      org.opencontainers.image.vendor="Spring" \
+      org.opencontainers.image.licenses="Apache-2.0"
 
-# Install curl for health check
-RUN tdnf install -y curl
-RUN tdnf clean all
-RUN rm -rf /var/cache/tdnf
-
-# Create non-root user with specific UID/GID
-RUN groupadd -r -g 1000 spring
-RUN useradd -r -u 1000 -g spring spring
+# System setup: install dependencies and create non-root user
+RUN tdnf install -y curl && \
+    tdnf clean all && \
+    rm -rf /var/cache/tdnf /tmp/* /var/tmp/* && \
+    groupadd -r -g 1000 spring && \
+    useradd -r -u 1000 -g spring -m -d /home/spring spring
 
 WORKDIR /app
 
-# Copy application layers from build stage with correct ownership
+# Copy Spring Boot application layers from build stage
 ARG DEPENDENCY=/workspace/app/target/dependency
 COPY --from=build --chown=spring:spring ${DEPENDENCY}/BOOT-INF/lib ./lib
 COPY --from=build --chown=spring:spring ${DEPENDENCY}/META-INF ./META-INF
 COPY --from=build --chown=spring:spring ${DEPENDENCY}/BOOT-INF/classes ./
 
-# Environment variables for JVM tuning
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+# JVM optimization environment variables
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC -XX:+UseStringDeduplication"
 
-# Switch to non-root user
+# Run as non-root user
 USER spring:spring
 
-# Expose application port
+# Document exposed port
 EXPOSE 8080
 
-# Add health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 CMD curl -f http://localhost:8080/actuator/health || exit 1
+# Health check configuration
+HEALTHCHECK --interval=30s --timeout=3s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8080/actuator/health || exit 1
 
-# Set entrypoint
+# Application entrypoint
 ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -cp ./:./lib/* org.springframework.samples.petclinic.PetClinicApplication"]
