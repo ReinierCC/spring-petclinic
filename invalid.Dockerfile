@@ -14,9 +14,9 @@ RUN ./mvnw dependency:go-offline -B
 # Copy source code
 COPY src src
 
-# Build the application
+# Build the application (tests are run separately in CI/CD pipeline)
 RUN ./mvnw package -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../spring-petclinic-*.jar)
 
 # Runtime stage
 FROM mcr.microsoft.com/openjdk/jdk:17-distroless
@@ -34,5 +34,5 @@ USER 65532:65532
 # Expose default Spring Boot port
 EXPOSE 8080
 
-# Run the application
-ENTRYPOINT ["java", "-cp", "/app:/app/lib/*", "org.springframework.samples.petclinic.PetClinicApplication"]
+# Run the application with JVM optimizations for containers
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-cp", "/app:/app/lib/*", "org.springframework.samples.petclinic.PetClinicApplication"]
