@@ -21,10 +21,12 @@ RUN apk add --no-cache wget
 
 # Create a non-root user
 RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
 
-# Copy the built artifact from the build stage
-COPY --from=build /app/target/spring-petclinic-*.jar app.jar
+# Copy the built artifact from the build stage with proper ownership
+COPY --from=build --chown=spring:spring /app/target/spring-petclinic-*.jar app.jar
+
+# Switch to non-root user
+USER spring:spring
 
 # Expose the application port
 EXPOSE 8080
