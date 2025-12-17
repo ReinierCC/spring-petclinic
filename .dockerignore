@@ -1,0 +1,49 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE files
+.idea
+.vscode
+.editorconfig
+*.iml
+.settings
+.project
+.classpath
+
+# Build output
+target/
+build/
+
+# CI/CD
+.github/
+
+# Documentation
+*.md
+LICENSE.txt
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Test files
+src/test/
+
+# Maven wrapper (using container's maven)
+.mvn/
+mvnw
+mvnw.cmd
+
+# Gradle files (not needed for Maven build)
+gradle/
+gradlew
+gradlew.bat
+build.gradle
+settings.gradle
+
+# Other
+.gitpod.yml
+k8s/
+policies.user
