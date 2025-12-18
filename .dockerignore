@@ -1,0 +1,43 @@
+# Build artifacts (but not target/*.jar which is needed for multi-stage builds)
+target/classes/
+target/test-classes/
+target/surefire-reports/
+target/generated-sources/
+target/generated-test-sources/
+build/
+*.war
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+.classpath
+.project
+.settings/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+LICENSE.txt
+
+# Test files
+src/test/
+
+# Docker files
+docker-compose.yml
+
+# Kubernetes files
+k8s/
+
+# CI/CD
+.github/
+
+# Other
+.mvn/
+.editorconfig
+.gitpod.yml
+rego/
