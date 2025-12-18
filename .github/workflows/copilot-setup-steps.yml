@@ -37,6 +37,10 @@ jobs:
           which containerization-assist-mcp
           containerization-assist-mcp --version
 
+      - name: Set CUSTOM_POLICY_PATH
+        run: |
+          echo "CUSTOM_POLICY_PATH=/home/runner/work/spring-petclinic/spring-petclinic/rego" >> "$GITHUB_ENV"
+
       - name: Test merge
         run: |
           containerization-assist-mcp list-policies --show-merged
