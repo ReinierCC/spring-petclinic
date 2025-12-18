@@ -21,3 +21,6 @@ jobs:
 
       - name: Set CUSTOM_POLICY_PATH
         run: echo "CUSTOM_POLICY_PATH=/home/runner/work/spring-petclinic/spring-petclinic/rego" >> "$GITHUB_ENV"
+
+      - name: List Containerization Policies
+        run: npx containerization-assist-mcp list-policies
