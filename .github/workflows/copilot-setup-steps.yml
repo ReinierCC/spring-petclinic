@@ -25,7 +25,3 @@ jobs:
       - name: Test merge
         run: |
           npx containerization-assist-mcp list-policies --show-merged
-
-      - name: Test merge
-        run: |
-          npx containerization-assist-mcp fix-dockerfile --dockerfile "/home/runner/work/spring-petclinic/spring-petclinic/invalid.Dockerfile"
