@@ -42,7 +42,7 @@ violations contains result if {
   result := {
     "rule": "require-team-label",
     "category": "compliance",
-    "priority": 90,
+    "priority": 99,
     "severity": "block",
     "message": "Dockerfile must include LABEL team=\"CLOUD NATIVE TOOLS". Example: LABEL team=\"platform-engineering\"",
     "description": "Require team label for ownership tracking",
