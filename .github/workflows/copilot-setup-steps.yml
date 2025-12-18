@@ -22,7 +22,7 @@ jobs:
       - name: Verify OPA installation
         run: opa version
       
-       - name: Test merge
+      - name: Test merge
         run: |
           npx containerization-assist-mcp list-policies --show-merged
 
