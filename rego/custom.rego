@@ -1,78 +1,130 @@
-package containerization.custom_comment_policy
+package containerization.custom_org
 
-import rego.v1
+# ==============================================================================
+# Custom Organization Policy Template
+# ==============================================================================
+#
+# This template provides a starting point for organization-specific policies.
+# Customize the rules below to match your organization's requirements.
+#
+# QUICK START:
+# 1. Copy this file to policies.user/ directory
+# 2. Customize the rules below (see examples)
+# 3. Test with: opa test policies.user/
+# 4. Restart your MCP client
+#
+# CUSTOMIZATION EXAMPLES:
+# - Enforce specific base image registry (e.g., your private registry)
+# - Require specific labels (team, cost-center, compliance)
+# - Block certain packages or configurations
+# - Enforce naming conventions
+#
+# ==============================================================================
 
-# Optional metadata (nice for debugging / reporting)
-policy_name := "Dockerfile Comment Enforcement"
+policy_name := "Custom Organization Policy"
 policy_version := "1.0"
 policy_category := "compliance"
 
-# -----------------------------------------------------------------------------
-# Input type detection
-# -----------------------------------------------------------------------------
+# Metadata (customize these)
+organization := "YOUR_ORG_NAME"
+contact := "devops@your-org.com"
 
-# Basic "is this a Dockerfile?" heuristic
-is_dockerfile if {
-  input.content != ""
-  contains(input.content, "FROM ")
-}
+# ==============================================================================
+# CUSTOMIZE: Required Labels
+# ==============================================================================
 
-# Keep the same style as the docs' example
-input_type := "dockerfile" if {
-  is_dockerfile
-} else := "unknown"
-
-# -----------------------------------------------------------------------------
-# RULES
-# -----------------------------------------------------------------------------
-
-# Single rule: require verification comment
+# Rule: require-team-label (priority: 90)
+# Require all Dockerfiles to specify team label
 violations contains result if {
   input_type == "dockerfile"
-  not has_verification_comment
+  not regex.match(`(?mi)^LABEL\s+.*team\s*=`, input.content)
 
   result := {
-    "rule":      "require-verification-comment",
-    "category":  "compliance",
-    "priority":  90,
-    "severity":  "block",
-    "message":   "Dockerfile must contain the comment '# CREATED BY CA - VERIFIED THROUGH REGO'.",
-    "description": "Require verification comment in Dockerfile",
+    "rule": "require-team-label",
+    "category": "compliance",
+    "priority": 90,
+    "severity": "block",
+    "message": "Dockerfile must include LABEL team=\"CLOUD NATIVE TOOLS". Example: LABEL team=\"platform-engineering\"",
+    "description": "Require team label for ownership tracking",
   }
 }
 
-# -----------------------------------------------------------------------------
-# HELPERS
-# -----------------------------------------------------------------------------
+# ==============================================================================
+# CUSTOMIZE: Allowed Base Registries
+# ==============================================================================
 
-# Check for verification comment anywhere in the Dockerfile
-has_verification_comment if {
-  regex.match(`(?i)#\s*CREATED BY CA - VERIFIED THROUGH REGO`, input.content)
+# Rule: enforce-private-registry (priority: 85)
+# Require base images from organization's private registry
+violations contains result if {
+  input_type == "dockerfile"
+
+  # Extract all FROM lines
+  from_lines := [line |
+    line := split(input.content, "\n")[_]
+    startswith(trim_space(line), "FROM ")
+  ]
+
+  # Check if any FROM line uses non-approved registry
+  some line in from_lines
+  not contains(line, "your-registry.example.com")  # CUSTOMIZE THIS
+  not contains(line, "mcr.microsoft.com")          # Allow MCR as fallback
+
+  result := {
+    "rule": "enforce-private-registry",
+    "category": "compliance",
+    "priority": 85,
+    "severity": "block",
+    "message": "Base images must come from your-registry.example.com or mcr.microsoft.com",
+    "description": "Enforce approved container registries",
+  }
 }
 
-# -----------------------------------------------------------------------------
-# POLICY DECISION
-# -----------------------------------------------------------------------------
+# ==============================================================================
+# CUSTOMIZE: Security Requirements
+# ==============================================================================
+
+# Rule: require-security-scanning-label (priority: 95)
+# Require label indicating security scan completion
+warnings contains result if {
+  input_type == "dockerfile"
+  not regex.match(`(?mi)^LABEL\s+.*security[_-]?scan\s*=\s*["']?true["']?`, input.content)
+
+  result := {
+    "rule": "require-security-scanning-label",
+    "category": "security",
+    "priority": 95,
+    "severity": "warn",
+    "message": "Add LABEL security-scan=\"true\" after running security scan",
+    "description": "Security scanning label recommended",
+  }
+}
+
+# ==============================================================================
+# Helper Functions
+# ==============================================================================
+
+is_dockerfile if contains(input.content, "FROM ")
+input_type := "dockerfile" if is_dockerfile else := "unknown"
+
+trim_space(str) := trimmed if {
+  trimmed := trim(str, " \t\r\n")
+}
+
+# ==============================================================================
+# Policy Decision
+# ==============================================================================
 
 default allow := false
+allow if count(violations) == 0
 
-allow if {
-  count(violations) == 0
-}
-
-# No warnings or suggestions in this policy
-warnings := []
-suggestions := []
-
-# Result structure (this is what containerization-assist expects)
 result := {
-  "allow":       allow,
-  "violations":  violations,
-  "warnings":    warnings,
-  "suggestions": suggestions,
+  "allow": allow,
+  "violations": violations,
+  "warnings": warnings,
+  "suggestions": [],
   "summary": {
-    "total_violations":  count(violations),
-    "total_warnings":    count(warnings),
+    "total_violations": count(violations),
+    "total_warnings": count(warnings),
     "total_suggestions": 0,
   },
 }
