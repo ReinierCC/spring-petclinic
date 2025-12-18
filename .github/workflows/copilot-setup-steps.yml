@@ -24,4 +24,4 @@ jobs:
       
       - name: Test merge
         run: |
-          npx containerization-assist-mcp list-policies --show-merged
+          npx containerization-assist-mcp@1.0.2 list-policies --show-merged
