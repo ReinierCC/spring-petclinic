@@ -1,130 +1,133 @@
-package containerization.custom_org
+package containerization.custom_registry  # 🚨 Custom package namespace
+
+import rego.v1
 
 # ==============================================================================
-# Custom Organization Policy Template
+# 🚨 CUSTOM REGISTRY POLICY 🚨
 # ==============================================================================
 #
-# This template provides a starting point for organization-specific policies.
-# Customize the rules below to match your organization's requirements.
+# This policy enforces custom registry rules in ADDITION to built-in policies.
+# To replace built-in policies, use SKIP_BUILT_IN_POLICIES env var.
 #
-# QUICK START:
-# 1. Copy this file to policies.user/ directory
-# 2. Customize the rules below (see examples)
-# 3. Test with: opa test policies.user/
-# 4. Restart your MCP client
-#
-# CUSTOMIZATION EXAMPLES:
-# - Enforce specific base image registry (e.g., your private registry)
-# - Require specific labels (team, cost-center, compliance)
-# - Block certain packages or configurations
-# - Enforce naming conventions
+# Example: SKIP_BUILT_IN_POLICIES="base-images.rego"
 #
 # ==============================================================================
 
-policy_name := "Custom Organization Policy"
+policy_name := "Custom Azure Registry Enforcement"
 policy_version := "1.0"
 policy_category := "compliance"
 
-# Metadata (customize these)
-organization := "YOUR_ORG_NAME"
-contact := "devops@your-org.com"
+# Define the allowed registries (MCR + our custom ACR)
+allowed_registries := {"mcr.microsoft.com", "myacrregistry.azurecr.io", "docker.io"}
 
 # ==============================================================================
-# CUSTOMIZE: Required Labels
+# INPUT TYPE DETECTION
 # ==============================================================================
 
-# Rule: require-team-label (priority: 90)
-# Require all Dockerfiles to specify team label
+is_dockerfile if {
+    contains(input.content, "FROM ")
+}
+
+input_type := "dockerfile" if {
+    is_dockerfile
+} else := "unknown"
+
+# ==============================================================================
+# RULES
+# ==============================================================================
+
+# ==============================================================================
+# 🚨 CUSTOM RULE: Enforce allowed registries
+# ==============================================================================
+# This rule will be ACTIVE when SKIP_BUILT_IN_POLICIES includes base-images.rego
+
+# Rule: enforce-custom-registries
 violations contains result if {
-  input_type == "dockerfile"
-  not regex.match(`(?mi)^LABEL\s+.*team\s*=`, input.content)
-
-  result := {
-    "rule": "require-team-label",
-    "category": "compliance",
-    "priority": 99,
-    "severity": "block",
-    "message": "Dockerfile must include LABEL team=\"CLOUD NATIVE TOOLS". Example: LABEL team=\"platform-engineering\"",
-    "description": "Require team label for ownership tracking",
-  }
+    is_dockerfile
+    
+    # Extract FROM lines
+    from_lines := [line |
+        line := split(input.content, "\n")[_]
+        regex.match(`(?i)^\s*FROM\s+`, line)
+    ]
+    
+    # Check each FROM line
+    some line in from_lines
+    image_name := extract_image_name(line)
+    not is_allowed_registry(image_name)
+    
+    result := {
+        "rule": "enforce-custom-registries",
+        "category": "compliance",
+        "priority": 99,
+        "severity": "block",
+        "message": sprintf("🚨 CUSTOM POLICY 🚨 Image '%s' must be from allowed registries: %v", [image_name, allowed_registries]),
+        "description": "Custom registry policy - allows MCR, ACR, and Docker Hub"
+    }
 }
 
-# ==============================================================================
-# CUSTOMIZE: Allowed Base Registries
-# ==============================================================================
-
-# Rule: enforce-private-registry (priority: 85)
-# Require base images from organization's private registry
+# Rule: Require verification comment
 violations contains result if {
-  input_type == "dockerfile"
-
-  # Extract all FROM lines
-  from_lines := [line |
-    line := split(input.content, "\n")[_]
-    startswith(trim_space(line), "FROM ")
-  ]
-
-  # Check if any FROM line uses non-approved registry
-  some line in from_lines
-  not contains(line, "your-registry.example.com")  # CUSTOMIZE THIS
-  not contains(line, "mcr.microsoft.com")          # Allow MCR as fallback
-
-  result := {
-    "rule": "enforce-private-registry",
-    "category": "compliance",
-    "priority": 85,
-    "severity": "block",
-    "message": "Base images must come from your-registry.example.com or mcr.microsoft.com",
-    "description": "Enforce approved container registries",
-  }
+    input_type == "dockerfile"
+    not has_verification_comment
+    
+    result := {
+        "rule": "require-verification-comment-CUSTOM-POLICY",
+        "category": "compliance",
+        "priority": 99,
+        "severity": "block",
+        "message": "🚨 CUSTOM POLICY TRIGGERED 🚨 Dockerfile MUST contain the comment '# CREATED BY CA - VERIFIED THROUGH REGO' to pass validation!",
+        "description": "Require verification comment in Dockerfile - Reinier's Policy"
+    }
 }
 
 # ==============================================================================
-# CUSTOMIZE: Security Requirements
+# HELPER FUNCTIONS
 # ==============================================================================
 
-# Rule: require-security-scanning-label (priority: 95)
-# Require label indicating security scan completion
-warnings contains result if {
-  input_type == "dockerfile"
-  not regex.match(`(?mi)^LABEL\s+.*security[_-]?scan\s*=\s*["']?true["']?`, input.content)
+# Extract image name from FROM line
+extract_image_name(from_line) := image if {
+    # Remove FROM keyword and whitespace
+    parts := regex.split(`\s+`, trim_space(from_line))
+    count(parts) >= 2
+    image := parts[1]
+}
 
-  result := {
-    "rule": "require-security-scanning-label",
-    "category": "security",
-    "priority": 95,
-    "severity": "warn",
-    "message": "Add LABEL security-scan=\"true\" after running security scan",
-    "description": "Security scanning label recommended",
-  }
+# Check if image uses an allowed registry
+is_allowed_registry(image_name) if {
+    some registry in allowed_registries
+    startswith(image_name, registry)
+}
+
+# Check for verification comment
+has_verification_comment if {
+    regex.match(`(?i)#\s*CREATED BY CA - VERIFIED THROUGH REGO`, input.content)
 }
 
 # ==============================================================================
-# Helper Functions
+# POLICY DECISION
 # ==============================================================================
 
-is_dockerfile if contains(input.content, "FROM ")
-input_type := "dockerfile" if is_dockerfile else := "unknown"
-
-trim_space(str) := trimmed if {
-  trimmed := trim(str, " \t\r\n")
-}
-
-# ==============================================================================
-# Policy Decision
-# ==============================================================================
-
+# Allow if no blocking violations
 default allow := false
-allow if count(violations) == 0
+allow if {
+    count(violations) == 0
+}
 
+# No warnings or suggestions in this policy
+warnings := []
+suggestions := []
+
+# Result structure (required)
 result := {
-  "allow": allow,
-  "violations": violations,
-  "warnings": warnings,
-  "suggestions": [],
-  "summary": {
-    "total_violations": count(violations),
-    "total_warnings": count(warnings),
-    "total_suggestions": 0,
-  },
+    "allow": allow,
+    "violations": violations,
+    "warnings": warnings,
+    "suggestions": suggestions,
+    "summary": {
+        "total_violations": count(violations),
+        "total_warnings": 0,
+        "total_suggestions": 0,
+        "policy_name": "🚨 CUSTOM REGISTRY POLICY 🚨"
+    }
 }
