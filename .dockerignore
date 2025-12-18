@@ -1,0 +1,47 @@
+# Git
+.git
+.gitignore
+.gitattributes
+.github
+
+# IDE
+.idea
+.vscode
+.settings
+.project
+.classpath
+*.iml
+*.ipr
+*.iws
+
+# Build outputs (excluding the final JAR we need)
+target/*
+!target/*.jar
+build/
+dist/
+out/
+bin/
+
+# Gradle
+.gradle
+gradle/wrapper/gradle-wrapper.jar
+
+# Documentation
+*.md
+docs/
+LICENSE.txt
+
+# Docker
+docker-compose.yml
+*.Dockerfile
+Dockerfile
+
+# Kubernetes
+k8s/
+
+# Other
+.editorconfig
+.gitpod.yml
+.mvn/wrapper/maven-wrapper.jar
+rego/
+artifacts/
