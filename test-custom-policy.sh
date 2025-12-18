@@ -38,7 +38,16 @@ echo ""
 
 # Test 4: Manual OPA evaluation with all policies
 echo "Test 4: Manual OPA evaluation with all 4 policies"
-BUILTIN_POLICIES="/home/runner/.npm/_npx/1a9240c980b33167/node_modules/containerization-assist-mcp/policies"
+
+# Find built-in policies directory dynamically
+BUILTIN_POLICIES=$(find ~/.npm/_npx -type d -name "containerization-assist-mcp" 2>/dev/null | head -1)
+if [ -n "$BUILTIN_POLICIES" ]; then
+    BUILTIN_POLICIES="$BUILTIN_POLICIES/policies"
+else
+    echo "❌ Could not find containerization-assist-mcp in npx cache"
+    exit 1
+fi
+echo "  Using built-in policies from: $BUILTIN_POLICIES"
 
 cat > /tmp/test-input.json << 'EOF'
 {
