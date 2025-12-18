@@ -21,3 +21,7 @@ jobs:
 
       - name: Verify OPA installation
         run: opa version
+
+      - name: Test with custom policy
+        run: |
+          npx containerization-assist-mcp fix-dockerfile --dockerfile "/home/runner/work/spring-petclinic/spring-petclinic/invalid.Dockerfile""
