@@ -9,12 +9,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Prepare containerization-assist log dir
-        run: |
-          mkdir -p "$HOME/.config/containerization-assist/tool-logs"
-          ls -la "$HOME/.config/containerization-assist/tool-logs"
-
       - name: Set up Node.js 22
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+
+      - name: Setup OPA
+        uses: open-policy-agent/setup-opa@v2
+        with:
+          version: latest
+
+      - name: Verify OPA installation
+        run: opa version
