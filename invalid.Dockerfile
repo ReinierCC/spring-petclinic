@@ -2,6 +2,6 @@
 # This expects the application to be built first: ./mvnw clean package -DskipTests
 FROM eclipse-temurin:17-jre-jammy
 WORKDIR /app
-COPY target/*.jar app.jar
+COPY target/spring-petclinic-*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
