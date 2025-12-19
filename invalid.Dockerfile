@@ -14,9 +14,7 @@ RUN ./mvnw dependency:go-offline -B
 COPY src src
 
 # Build application
-RUN ./mvnw package -DskipTests && \
-    mkdir -p target/dependency && \
-    (cd target/dependency; jar -xf ../spring-petclinic-*.jar)
+RUN ./mvnw package -DskipTests
 
 # Runtime stage
 FROM mcr.microsoft.com/openjdk/jdk:17-distroless
@@ -26,15 +24,10 @@ USER 65532:65532
 
 WORKDIR /app
 
-# Copy Spring Boot loader classes
-COPY --from=build --chown=65532:65532 /workspace/app/target/dependency/org /app/org
-
-# Copy application from build stage
-COPY --from=build --chown=65532:65532 /workspace/app/target/dependency/BOOT-INF/lib /app/lib
-COPY --from=build --chown=65532:65532 /workspace/app/target/dependency/META-INF /app/META-INF
-COPY --from=build --chown=65532:65532 /workspace/app/target/dependency/BOOT-INF/classes /app
+# Copy the JAR file directly
+COPY --from=build --chown=65532:65532 /workspace/app/target/spring-petclinic-*.jar /app/app.jar
 
 # Expose application port
 EXPOSE 8080
 
-ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
