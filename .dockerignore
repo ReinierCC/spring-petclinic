@@ -1,0 +1,41 @@
+# Build outputs (except target - we need the JAR)
+build/
+*.war
+*.class
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+LICENSE.txt
+
+# Test files
+src/test/
+
+# Other
+.gradle/
+*.log
+tmp/
+docker-compose.yml
+k8s/
+.github/
+.devcontainer/
+policies.user/
+fail.Dockerfile
+invalid.Dockerfile
+artifacts/
+
+
