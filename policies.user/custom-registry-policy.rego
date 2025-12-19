@@ -7,12 +7,11 @@ import rego.v1
 # ==============================================================================
 #
 # This policy enforces:
-# 1. Only MCR and specific ACR registries are allowed
-# 2. Dockerfile must contain verification comment
+# 1. Dockerfile must contain verification comment
 #
 # ==============================================================================
 
-policy_name := "Custom Azure Registry Enforcement"
+policy_name := "Custom Enforcement"
 policy_version := "1.0"
 policy_category := "compliance"
 
@@ -80,6 +79,6 @@ result := {
         "total_violations": count(violations),
         "total_warnings": 0,
         "total_suggestions": 0,
-        "policy_name": "🚨 CUSTOM REGISTRY POLICY 🚨"
+        "policy_name": "🚨 CUSTOM POLICY 🚨"
     }
 }
