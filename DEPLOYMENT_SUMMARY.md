@@ -81,7 +81,7 @@ The application home page showing Spring PetClinic welcome screen with navigatio
 
 ### Kubernetes Health Probes
 - **Liveness**: TCP socket on port 8080 (60s initial delay)
-- **Readiness**: HTTP GET on `/` (60s initial delay)
+- **Readiness**: HTTP GET on `/actuator/health/readiness` (60s initial delay)
 - Delays account for ~15-20 second startup time
 
 ### Database Configuration

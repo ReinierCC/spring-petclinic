@@ -78,7 +78,7 @@ kubectl port-forward -n app service/spring-petclinic 8080:8080
 
 **Health Checks**:
 - Liveness: TCP socket on port 8080
-- Readiness: HTTP GET on `/` endpoint
+- Readiness: HTTP GET on `/actuator/health/readiness` endpoint
 
 ### Verification
 ```bash
