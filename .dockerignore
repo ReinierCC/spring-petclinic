@@ -1,0 +1,50 @@
+# Build output (except the final JAR)
+target/*
+!target/*.jar
+build/
+*.class
+
+# IDE files
+.idea/
+.vscode/
+.settings/
+.project
+.classpath
+*.iml
+*.iws
+*.ipr
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+
+# Documentation
+*.md
+LICENSE.txt
+
+# Dev tools
+.devcontainer/
+.gitpod.yml
+
+# Test files
+src/test/
+
+# Gradle
+.gradle/
+gradlew
+gradlew.bat
+gradle/
+
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+
+# Misc
+*.log
+*.tmp
+.DS_Store
