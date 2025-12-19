@@ -39,10 +39,37 @@ Or you can run it from Maven directly using the Spring Boot Maven plugin. If you
 
 ## Building a Container
 
-There is no `Dockerfile` in this project. You can build a container image (if you have a docker daemon) using the Spring Boot build plugin:
+You can build a container image using the provided `Dockerfile`:
+
+```bash
+./mvnw package -DskipTests
+docker build -t spring-petclinic:1.0 .
+docker run -p 8080:8080 spring-petclinic:1.0
+```
+
+Alternatively, you can use the Spring Boot build plugin:
 
 ```bash
 ./mvnw spring-boot:build-image
+```
+
+### Kubernetes Deployment
+
+Kubernetes manifests are available in the `artifacts/manifests/` directory. To deploy to a Kubernetes cluster:
+
+```bash
+kubectl create namespace app
+kubectl apply -f artifacts/manifests/
+```
+
+For local testing with KIND:
+
+```bash
+kind create cluster --name petclinic
+kind load docker-image spring-petclinic:1.0 --name petclinic
+kubectl create namespace app
+kubectl apply -f artifacts/manifests/
+kubectl port-forward -n app svc/spring-petclinic 8080:8080
 ```
 
 ## In case you find a bug/suggested improvement for Spring Petclinic
