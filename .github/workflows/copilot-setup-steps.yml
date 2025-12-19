@@ -22,21 +22,6 @@ jobs:
       - name: Verify OPA installation
         run: opa version
 
-      # IMPORTANT: $GITHUB_PATH only takes effect for subsequent steps, not within the same step.
-      - name: Configure npm global prefix + PATH
-        run: |
-          npm config set prefix "$HOME/.npm-global"
-          echo "$HOME/.npm-global/bin" >> "$GITHUB_PATH"
-
-      - name: Install containerization-assist-mcp@1.0.2
-        run: |
-          npm i -g containerization-assist-mcp@1.0.2
-
-      - name: Verify containerization-assist-mcp install
-        run: |
-          which containerization-assist-mcp
-          containerization-assist-mcp --version
-
       - name: Set CUSTOM_POLICY_PATH
         run: |
           echo "CUSTOM_POLICY_PATH=/home/runner/work/spring-petclinic/spring-petclinic/rego" >> "$GITHUB_ENV"
