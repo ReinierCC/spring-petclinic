@@ -1,0 +1,12 @@
+- [ ] containerization-assist-mcp/analyze-repo — Result:
+- [ ] containerization-assist-mcp/generate-dockerfile — Result:
+- [ ] containerization-assist-mcp/fix-dockerfile — Result:
+- [ ] containerization-assist-mcp/build-image — Result:
+- [ ] containerization-assist-mcp/scan-image — Result:
+- [ ] containerization-assist-mcp/prepare-cluster — Result:
+- [ ] containerization-assist-mcp/tag-image — Result:
+- [ ] containerization-assist-mcp/push-image — Result:
+- [ ] containerization-assist-mcp/generate-k8s-manifests — Result:
+- [ ] containerization-assist-mcp/deploy — Result:
+- [ ] containerization-assist-mcp/verify-deploy — Result:
+- [ ] Playwright screenshot of home page captured (artifacts/app.png) — Result:
