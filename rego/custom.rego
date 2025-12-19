@@ -6,8 +6,17 @@ policy_name := "Custom Org Always-Fail Test"
 policy_version := "1.0"
 policy_category := "debug"
 
-# Always emit a violation, for any input (Dockerfile, K8s, whatever)
+# Helper functions for input type detection
+is_dockerfile if {
+  contains(input.content, "FROM ")
+}
+
+input_type := "dockerfile" if is_dockerfile
+
+# Always emit a violation for Dockerfile inputs
 violations contains v if {
+  input_type == "dockerfile"
+  
   v := {
     "rule":      "always-fail-custom-org",
     "category":  "debug",
