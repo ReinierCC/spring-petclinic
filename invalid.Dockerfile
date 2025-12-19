@@ -14,8 +14,9 @@ RUN ./mvnw dependency:go-offline -B
 COPY src src
 
 # Build application
-RUN ./mvnw package -DskipTests
-RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
+RUN ./mvnw package -DskipTests && \
+    mkdir -p target/dependency && \
+    (cd target/dependency; jar -xf ../spring-petclinic-*.jar)
 
 # Runtime stage
 FROM mcr.microsoft.com/openjdk/jdk:17-distroless
