@@ -20,21 +20,20 @@ RUN mkdir -p target/dependency && (cd target/dependency; jar -xf ../*.jar)
 # Runtime stage
 FROM mcr.microsoft.com/openjdk/jdk:17-distroless
 
-# Create non-root user
-USER nonroot:nonroot
+# Use numeric UID for distroless (65532 is the standard nonroot user)
+USER 65532:65532
 
 WORKDIR /app
 
+# Copy Spring Boot loader classes
+COPY --from=build --chown=65532:65532 /workspace/app/target/dependency/org /app/org
+
 # Copy application from build stage
-COPY --from=build --chown=nonroot:nonroot /workspace/app/target/dependency/BOOT-INF/lib /app/lib
-COPY --from=build --chown=nonroot:nonroot /workspace/app/target/dependency/META-INF /app/META-INF
-COPY --from=build --chown=nonroot:nonroot /workspace/app/target/dependency/BOOT-INF/classes /app
+COPY --from=build --chown=65532:65532 /workspace/app/target/dependency/BOOT-INF/lib /app/lib
+COPY --from=build --chown=65532:65532 /workspace/app/target/dependency/META-INF /app/META-INF
+COPY --from=build --chown=65532:65532 /workspace/app/target/dependency/BOOT-INF/classes /app
 
 # Expose application port
 EXPOSE 8080
 
-# Add health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
-  CMD ["java", "-cp", "/app:/app/lib/*", "org.springframework.boot.actuate.health.HealthEndpointSupport"]
-
-ENTRYPOINT ["java", "-cp", "/app:/app/lib/*", "org.springframework.samples.PetClinicApplication"]
+ENTRYPOINT ["java", "org.springframework.boot.loader.launch.JarLauncher"]
