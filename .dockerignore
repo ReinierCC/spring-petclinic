@@ -1,0 +1,42 @@
+# Build artifacts (excluding target since we need the JAR)
+build/
+*.war
+*.class
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.settings/
+.classpath
+.project
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+LICENSE.txt
+
+# Test files
+src/test/
+
+# CI/CD
+.github/
+.devcontainer/
+
+# Other
+gradlew
+gradlew.bat
+gradle/
+build.gradle
+settings.gradle
+docker-compose.yml
+*.Dockerfile
+k8s/
+artifacts/
+policies.user/
