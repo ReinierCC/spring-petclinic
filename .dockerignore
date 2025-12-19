@@ -1,0 +1,51 @@
+# Build outputs
+target/
+build/
+bin/
+out/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.factorypath
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+LICENSE.txt
+docs/
+
+# CI/CD
+.github/
+.gitpod.yml
+.devcontainer/
+
+# Test outputs
+*.log
+*.tmp
+.gradle/
+
+# Docker
+docker-compose.yml
+Dockerfile*
+.dockerignore
+
+# Kubernetes
+k8s/
+
+# Other
+rego/
+*.swp
+*.swo
+*~
+.DS_Store
