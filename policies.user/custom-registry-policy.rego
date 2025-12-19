@@ -16,9 +16,6 @@ policy_name := "Custom Azure Registry Enforcement"
 policy_version := "1.0"
 policy_category := "compliance"
 
-# Define the allowed registries
-allowed_registries := {"mcr.microsoft.com", "myacrregistry.azurecr.io"}
-
 # ==============================================================================
 # INPUT TYPE DETECTION
 # ==============================================================================
@@ -35,31 +32,6 @@ input_type := "dockerfile" if {
 # RULES
 # ==============================================================================
 
-# Rule: Enforce allowed registries
-violations contains result if {
-    input_type == "dockerfile"
-    
-    # Extract FROM lines
-    from_lines := [line |
-        line := split(input.content, "\n")[_]
-        regex.match(`(?i)^\s*FROM\s+`, line)
-    ]
-    
-    # Check each FROM line
-    some line in from_lines
-    image_name := extract_image_name(line)
-    not is_allowed_registry(image_name)
-    
-    result := {
-        "rule": "enforce-azure-registries-CUSTOM-POLICY",
-        "category": "compliance",
-        "priority": 99,
-        "severity": "block",
-        "message": sprintf("🚨 CUSTOM POLICY TRIGGERED 🚨 Image '%s' is NOT from allowed registry. Only MCR (mcr.microsoft.com) or myacrregistry.azurecr.io are permitted!", [image_name]),
-        "description": "Custom Azure Registry Enforcement - Reinier's Policy"
-    }
-}
-
 # Rule: Require verification comment
 violations contains result if {
     input_type == "dockerfile"
@@ -71,7 +43,7 @@ violations contains result if {
         "priority": 99,
         "severity": "block",
         "message": "🚨 CUSTOM POLICY TRIGGERED 🚨 Dockerfile MUST contain the comment '# CREATED BY CA - VERIFIED THROUGH REGO' to pass validation!",
-        "description": "Require verification comment in Dockerfile - Reinier's Policy"
+        "description": "Require verification comment in Dockerfile"
     }
 }
 
