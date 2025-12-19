@@ -30,6 +30,12 @@ spec:
         env:
         - name: SPRING_PROFILES_ACTIVE
           value: "prod"
+        - name: SPRING_CONFIG_LOCATION
+          value: "classpath:/application.properties,file:/config/application.properties"
+        volumeMounts:
+        - name: config
+          mountPath: /config
+          readOnly: true
         resources:
           requests:
             cpu: "500m"
@@ -46,9 +52,13 @@ spec:
           failureThreshold: 3
         readinessProbe:
           httpGet:
-            path: /
+            path: /actuator/health/readiness
             port: 8080
           initialDelaySeconds: 60
           periodSeconds: 5
           timeoutSeconds: 5
           failureThreshold: 3
+      volumes:
+      - name: config
+        configMap:
+          name: spring-petclinic-config

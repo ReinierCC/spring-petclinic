@@ -10,8 +10,10 @@ metadata:
 data:
   application.properties: |
     # Spring PetClinic Configuration
+    # Using H2 in-memory database for demo purposes
     spring.datasource.url=jdbc:h2:mem:petclinic
     spring.datasource.username=sa
+    # Empty password is intentional for H2 in-memory demo database
     spring.datasource.password=
     spring.jpa.hibernate.ddl-auto=none
     spring.jpa.open-in-view=true
