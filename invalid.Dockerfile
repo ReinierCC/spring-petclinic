@@ -1,10 +1,7 @@
 # CREATED BY CA - VERIFIED THROUGH REGO
 # Multi-stage build for Spring Boot application
-FROM mcr.microsoft.com/openjdk/jdk:17-azurelinux AS build
+FROM mcr.microsoft.com/openjdk/jdk:17-ubuntu AS build
 WORKDIR /workspace/app
-
-# Install tar which is required for Maven wrapper
-RUN tdnf install -y tar
 
 # Copy Maven wrapper and pom.xml for dependency caching
 COPY mvnw .
