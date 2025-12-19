@@ -51,20 +51,6 @@ violations contains result if {
 # HELPER FUNCTIONS
 # ==============================================================================
 
-# Extract image name from FROM line
-extract_image_name(from_line) := image if {
-    # Remove FROM keyword and whitespace
-    parts := regex.split(`\s+`, trim_space(from_line))
-    count(parts) >= 2
-    image := parts[1]
-}
-
-# Check if image uses an allowed registry
-is_allowed_registry(image_name) if {
-    some registry in allowed_registries
-    startswith(image_name, registry)
-}
-
 # Check for verification comment
 has_verification_comment if {
     regex.match(`(?i)#\s*CREATED BY CA - VERIFIED THROUGH REGO`, input.content)
