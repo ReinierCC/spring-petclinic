@@ -21,11 +21,7 @@ jobs:
 
       - name: Verify OPA installation
         run: opa version
-
-      - name: Set CUSTOM_POLICY_PATH
-        run: |
-          echo "CUSTOM_POLICY_PATH=/home/runner/work/spring-petclinic/spring-petclinic/rego" >> "$GITHUB_ENV"
-
+        
       - name: Test merge
         run: |
           npx containerization-assist-mcp@1.1.0-dev.1 list-policies --show-merged
