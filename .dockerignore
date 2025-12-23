@@ -1,0 +1,46 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# IDE
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings
+
+# Build source (keeping target for JAR)
+src/
+pom.xml
+mvnw
+mvnw.cmd
+.mvn
+
+# Logs
+*.log
+
+# Documentation
+*.md
+docs/
+
+# Docker
+docker-compose.yml
+*.Dockerfile
+
+# Kubernetes
+k8s/
+
+# Misc
+.DS_Store
+*.swp
+*.swo
+*~
