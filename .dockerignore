@@ -1,0 +1,60 @@
+# Git and version control
+.git
+.gitignore
+.gitattributes
+.github
+
+# Build artifacts (but keep target for Dockerfile)
+build/
+*.class
+*.war
+
+# IDE and editor files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.settings/
+.project
+.classpath
+
+# Documentation and development
+README.md
+LICENSE.txt
+*.md
+docs/
+
+# Docker and container files
+Dockerfile
+*.Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Kubernetes and deployment
+k8s/
+rego/
+artifacts/
+
+# Test and coverage
+*.log
+.coverage
+htmlcov/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Development tools
+.editorconfig
+.gitpod.yml
+.devcontainer/
+
+# Gradle cache (will be rebuilt in container)
+.gradle/
+gradle/
+gradlew
+gradlew.bat
+
+# Maven cache (will be rebuilt in container, except wrapper)
+.mvn/wrapper/maven-wrapper.jar
