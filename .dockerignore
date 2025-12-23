@@ -1,0 +1,11 @@
+target/
+.git/
+.gitignore
+.mvn/
+*.md
+README*
+LICENSE*
+.editorconfig
+.gitattributes
+docker-compose.yml
+*.Dockerfile
