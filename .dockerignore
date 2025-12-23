@@ -1,0 +1,44 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea
+.vscode
+.eclipse
+.settings
+*.iml
+
+# Build artifacts
+target/
+build/
+*.class
+*.jar
+*.war
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Documentation
+*.md
+LICENSE.txt
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# CI/CD
+.github/
+.gitpod.yml
+.devcontainer/
+
+# Kubernetes
+k8s/
+
+# Policies
+policies.user/
+
+# Test files (excluded since tests are skipped during Docker build with -DskipTests)
+src/test/
