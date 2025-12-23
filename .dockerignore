@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea
+.vscode
+.devcontainer
+*.iml
+*.ipr
+*.iws
+
+# Build outputs (exclude all except final JAR in target/)
+build/
+*.class
+
+# Test outputs
+coverage/
+*.log
+
+# Maven wrapper JAR
+.mvn/wrapper/maven-wrapper.jar
+
+# Gradle
+.gradle/
+gradle-wrapper.jar
+
+# Documentation
+*.md
+LICENSE.txt
+docs/
+
+# CI/CD
+.github/
+.gitpod.yml
+
+# Docker
+*.Dockerfile
+docker-compose.yml
+
+# Temporary files
+*.tmp
+*.swp
+*~
