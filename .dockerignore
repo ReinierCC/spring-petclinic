@@ -1,0 +1,59 @@
+# Build artifacts (but keep target/ for pre-built JAR)
+build/
+*.war
+*.ear
+*.class
+
+# Test files
+**/test-results/
+**/test-output/
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker files
+*.Dockerfile
+Dockerfile.*
+docker-compose*.yml
+
+# Documentation
+*.md
+docs/
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Kubernetes
+k8s/
+
+# Other
+.editorconfig
+.gitpod.yml
+.devcontainer/
+policies.user/
+artifacts/
+fail.Dockerfile
+invalid.Dockerfile
+src/
+.mvn/
+mvnw
+mvnw.cmd
+pom.xml
+build.gradle
+settings.gradle
+gradle/
+gradlew
+gradlew.bat
