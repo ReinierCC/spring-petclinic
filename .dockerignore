@@ -1,0 +1,49 @@
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea
+.vscode
+.eclipse
+.settings
+.classpath
+.project
+*.iml
+*.iws
+
+# Testing
+*.log
+.pytest_cache
+coverage/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.yml
+Dockerfile*
+.dockerignore
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Documentation
+README.md
+LICENSE.txt
+*.md
+docs/
+
+# Other
+.editorconfig
+.gitpod.yml
+.devcontainer
+k8s/
+rego/
+
+# Keep target directory with JAR file for Docker build
+!target/*.jar
