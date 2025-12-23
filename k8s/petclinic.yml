@@ -30,7 +30,8 @@ spec:
     spec:
       containers:
         - name: workload
-          image: dsyer/petclinic
+          image: spring-petclinic:1.0.0
+          imagePullPolicy: IfNotPresent
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: postgres

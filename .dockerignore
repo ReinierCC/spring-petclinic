@@ -1,0 +1,35 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE files
+.idea
+.vscode
+*.iml
+*.iws
+*.ipr
+
+# Build artifacts (except target directory which contains the JAR)
+.mvn/wrapper/maven-wrapper.jar
+
+# Test files
+src/test
+
+# Documentation
+*.md
+LICENSE.txt
+
+# CI/CD
+.github
+.devcontainer
+.gitpod.yml
+
+# Docker
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Misc
+*.log
+*.tmp
