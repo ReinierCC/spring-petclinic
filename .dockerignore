@@ -1,0 +1,35 @@
+# IDE files
+.idea/
+.vscode/
+.settings/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# CI/CD
+.github/
+
+# Documentation
+README.md
+LICENSE.txt
+*.md
+
+# Test files
+src/test/
+
+# Other
+.mvn/wrapper/maven-wrapper.jar
+node_modules/
+target/
+
