@@ -1,0 +1,40 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# IDE files
+.idea
+.vscode
+*.iml
+
+# Build artifacts
+target
+build
+*.class
+*.jar
+*.war
+
+# Documentation
+README.md
+LICENSE.txt
+*.md
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Development tools
+.editorconfig
+.mvn/wrapper/maven-wrapper.jar
+
+# Docker
+Dockerfile
+docker-compose.yml
+
+# Kubernetes
+k8s
+
+# Other
+.DS_Store
+node_modules
